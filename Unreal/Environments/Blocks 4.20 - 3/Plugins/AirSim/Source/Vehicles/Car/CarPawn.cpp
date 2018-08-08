@@ -39,33 +39,39 @@ ACarPawn::ACarPawn()
     setupVehicleMovementComponent();
 
     // Create In-Car camera component 
+    constexpr float camera_equiv_ahead1 = 3847;
+    constexpr float camera_equiv_ahead2 = 1712;
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(285.5, 0, 188)); //center: fb, lr, ud
+    camera_front_center_base_->SetRelativeLocation(FVector(285.5f + camera_equiv_ahead1,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
     camera_front_center_base_->SetupAttachment(GetMesh());
     
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(287, 74, 188.5)); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(287 + camera_equiv_ahead2, 74, 188.5f  )); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
     
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(287, -31.5, 188.5)); //right
+    camera_front_right_base_->SetRelativeLocation(FVector(287, -31.5f, 188.5f)); //right
     camera_front_right_base_->SetupAttachment(GetMesh());
 
     // ----------------------------------------------------------------------------------------------------
     camera_back_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_left_base_"));
-    camera_back_left_base_->SetRelativeLocation(FVector(278, 132, 188.5)); 
+    camera_back_left_base_->SetRelativeLocation(FVector(278, 132, 188.5f)); 
+    camera_back_left_base_->SetRelativeRotation(FRotator(0, 180, 0 )); 
     camera_back_left_base_->SetupAttachment(GetMesh());
 
     camera_back_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_right_base_"));
-    camera_back_right_base_->SetRelativeLocation(FVector(278, -132, 188.5)); 
+    camera_back_right_base_->SetRelativeLocation(FVector(278, -132, 188.5f)); 
+    camera_back_right_base_->SetRelativeRotation(FRotator(0, 180, 0 )); 
     camera_back_right_base_->SetupAttachment(GetMesh());
 
     camera_spherical_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_spherical_left_base_"));
-    camera_spherical_left_base_->SetRelativeLocation(FVector(298.5, 132.5, 188.5)); // fish-eye, spherical-mirror
+    camera_spherical_left_base_->SetRelativeLocation(FVector(298.5f, 132.5f, 188.5f)); // fish-eye, spherical-mirror
+    camera_spherical_left_base_->SetRelativeRotation(FRotator(0, -90, 0 )); 
     camera_spherical_left_base_->SetupAttachment(GetMesh());
 
     camera_spherical_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_spherical_right_base_"));
-    camera_spherical_right_base_->SetRelativeLocation(FVector(298.5, -132.5, 188.5)); // fish-eye, spherical-mirror
+    camera_spherical_right_base_->SetRelativeLocation(FVector(298.5f, -132.5f, 188.5f)); // fish-eye, spherical-mirror
+    camera_spherical_right_base_->SetRelativeRotation(FRotator(0, 90, 0 )); 
     camera_spherical_right_base_->SetupAttachment(GetMesh());
     // ----------------------------------------------------------------------------------------------------
 

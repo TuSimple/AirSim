@@ -4,6 +4,12 @@ import airsim
 import time
 import os
 import numpy as np
+import glob
+
+PICTURE_PATH = '/home/yuan.feng/helloCarImages/py/'
+files = glob.glob(PICTURE_PATH+'*')
+for f in files:
+    os.remove(f)
 
 # connect to the AirSim simulator 
 client = airsim.CarClient()
@@ -50,15 +56,22 @@ for idx in range(2):
     
     # get camera images from the car
     responses = client.simGetImages([
-        airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
-        airsim.ImageRequest("1", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
-        airsim.ImageRequest("1", airsim.ImageType.Scene), #scene vision image in png format
-        airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+        airsim.ImageRequest("1", airsim.ImageType.Scene),
+        airsim.ImageRequest("3", airsim.ImageType.Scene),
+        airsim.ImageRequest("4", airsim.ImageType.Scene),
+        airsim.ImageRequest("6", airsim.ImageType.Scene),
+        airsim.ImageRequest("7", airsim.ImageType.Scene),
+        airsim.ImageRequest("8", airsim.ImageType.Scene),
+        airsim.ImageRequest("9", airsim.ImageType.Scene),
+        airsim.ImageRequest("10", airsim.ImageType.Scene),
+        airsim.ImageRequest("11", airsim.ImageType.Scene)
+        ])  #scene vision image in uncompressed RGBA array
     print('Retrieved images: %d', len(responses))
-
+    cameras = [1,3,4,6,7,8,9,10,11]
+    count = 0 
     for response in responses:
-        # filename = 'c:/temp/py' + str(idx)
-        filename = '/home/yuan.feng/helloCarImages/py/' + str(idx)
+        filename = PICTURE_PATH + str(idx) + 'camera' + str(cameras[count])
+        count = count + 1 
 
         if response.pixels_as_float:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
@@ -73,14 +86,6 @@ for idx in range(2):
             img_rgba = np.flipud(img_rgba) #original image is flipped vertically
             img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
             airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
-    vehicle_pose = client.simGetVehiclePose()
-    print('vehiclepose = {}'.format( vehicle_pose )  ) 
-    print('camerainfo = {}'.format( client.simGetCameraInfo("1") )  ) 
-    client.simSetObjectPose("PhysXCar_camera_front_center", vehicle_pose) 
-    print('simGetObjectPose = {}'.format( client.simGetObjectPose("PhysXCar_camera_front_center") )  ) 
-
-    # client.simGetObjectPose()
-    # client.simGetCameraInfo()
 
 #restore to original state
 client.reset()
