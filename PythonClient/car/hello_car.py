@@ -11,7 +11,7 @@ client.confirmConnection()
 client.enableApiControl(True)
 car_controls = airsim.CarControls()
 
-for idx in range(3):
+for idx in range(2):
     # get state of the car
     car_state = client.getCarState()
     print("Speed %d, Gear %d" % (car_state.speed, car_state.gear))
@@ -57,7 +57,8 @@ for idx in range(3):
     print('Retrieved images: %d', len(responses))
 
     for response in responses:
-        filename = 'c:/temp/py' + str(idx)
+        # filename = 'c:/temp/py' + str(idx)
+        filename = '/home/yuan.feng/helloCarImages/py/' + str(idx)
 
         if response.pixels_as_float:
             print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
@@ -72,7 +73,14 @@ for idx in range(3):
             img_rgba = np.flipud(img_rgba) #original image is flipped vertically
             img_rgba[:,:,1:2] = 100 #just for fun add little bit of green in all pixels
             airsim.write_png(os.path.normpath(filename + '.greener.png'), img_rgba) #write to png 
+    vehicle_pose = client.simGetVehiclePose()
+    print('vehiclepose = {}'.format( vehicle_pose )  ) 
+    print('camerainfo = {}'.format( client.simGetCameraInfo("1") )  ) 
+    client.simSetObjectPose("PhysXCar_camera_front_center", vehicle_pose) 
+    print('simGetObjectPose = {}'.format( client.simGetObjectPose("PhysXCar_camera_front_center") )  ) 
 
+    # client.simGetObjectPose()
+    # client.simGetCameraInfo()
 
 #restore to original state
 client.reset()

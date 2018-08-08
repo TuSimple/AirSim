@@ -18,7 +18,7 @@
 
 ACarPawn::ACarPawn()
 {
-    std::cerr << " ACarPawn::ACarPawn is called ! for test compile" << std::endl ; 
+    std::cerr << " ACarPawn::ACarPawn is called ?! for test compile" << std::endl ; 
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
