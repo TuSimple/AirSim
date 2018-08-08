@@ -39,14 +39,12 @@ ACarPawn::ACarPawn()
     setupVehicleMovementComponent();
 
     // Create In-Car camera component 
-    constexpr float camera_equiv_ahead1 = 3847;
-    constexpr float camera_equiv_ahead2 = 1712;
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(285.5f + camera_equiv_ahead1,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
+    camera_front_center_base_->SetRelativeLocation(FVector(285.5f,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
     camera_front_center_base_->SetupAttachment(GetMesh());
     
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(287 + camera_equiv_ahead2, 74, 188.5f  )); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(287, 74, 188.5f  )); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
     
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
@@ -215,10 +213,12 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_left"));
     camera_front_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_front_left_->GetCameraComponent()->SetFieldOfView(3847);
     camera_front_left_->AttachToComponent(camera_front_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_right"));
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_front_right_->GetCameraComponent()->SetFieldOfView(1712);
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
 
