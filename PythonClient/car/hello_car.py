@@ -56,15 +56,15 @@ for idx in range(2):
     
     # get camera images from the car
     responses = client.simGetImages([
-        airsim.ImageRequest("1", airsim.ImageType.Scene),
-        airsim.ImageRequest("3", airsim.ImageType.Scene),
-        airsim.ImageRequest("4", airsim.ImageType.Scene),
-        airsim.ImageRequest("6", airsim.ImageType.Scene),
-        airsim.ImageRequest("7", airsim.ImageType.Scene),
-        airsim.ImageRequest("8", airsim.ImageType.Scene),
-        airsim.ImageRequest("9", airsim.ImageType.Scene),
-        airsim.ImageRequest("10", airsim.ImageType.Scene),
-        airsim.ImageRequest("11", airsim.ImageType.Scene)
+        airsim.ImageRequest("front_left", airsim.ImageType.Scene),
+        airsim.ImageRequest("front_center", airsim.ImageType.Scene),
+        airsim.ImageRequest("front_right", airsim.ImageType.Scene)
+        # , airsim.ImageRequest("6", airsim.ImageType.Scene),
+        # airsim.ImageRequest("7", airsim.ImageType.Scene),
+        # airsim.ImageRequest("8", airsim.ImageType.Scene),
+        # airsim.ImageRequest("9", airsim.ImageType.Scene),
+        # airsim.ImageRequest("10", airsim.ImageType.Scene),
+        # airsim.ImageRequest("11", airsim.ImageType.Scene)
         ])  #scene vision image in uncompressed RGBA array
     print('Retrieved images: %d', len(responses))
     cameras = [1,3,4,6,7,8,9,10,11]
