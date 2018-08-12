@@ -22,49 +22,49 @@ for idx in range(2):
     car_state = client.getCarState()
     print("Speed %d, Gear %d" % (car_state.speed, car_state.gear))
 
-    # go forward
-    car_controls.throttle = 0.5
-    car_controls.steering = 0
-    client.setCarControls(car_controls)
-    print("Go Forward")
-    time.sleep(3)   # let car drive a bit
+    # # go forward
+    # car_controls.throttle = 0.5
+    # car_controls.steering = 0
+    # client.setCarControls(car_controls)
+    # print("Go Forward")
+    # time.sleep(3)   # let car drive a bit
 
-    # Go forward + steer right
-    car_controls.throttle = 0.5
-    car_controls.steering = 1
-    client.setCarControls(car_controls)
-    print("Go Forward, steer right")
-    time.sleep(3)   # let car drive a bit
+    # # Go forward + steer right
+    # car_controls.throttle = 0.5
+    # car_controls.steering = 1
+    # client.setCarControls(car_controls)
+    # print("Go Forward, steer right")
+    # time.sleep(3)   # let car drive a bit
 
-    # go reverse
-    car_controls.throttle = -0.5
-    car_controls.is_manual_gear = True;
-    car_controls.manual_gear = -1
-    car_controls.steering = 0
-    client.setCarControls(car_controls)
-    print("Go reverse, steer right")
-    time.sleep(3)   # let car drive a bit
-    car_controls.is_manual_gear = False; # change back gear to auto
-    car_controls.manual_gear = 0  
+    # # go reverse
+    # car_controls.throttle = -0.5
+    # car_controls.is_manual_gear = True;
+    # car_controls.manual_gear = -1
+    # car_controls.steering = 0
+    # client.setCarControls(car_controls)
+    # print("Go reverse, steer right")
+    # time.sleep(3)   # let car drive a bit
+    # car_controls.is_manual_gear = False; # change back gear to auto
+    # car_controls.manual_gear = 0  
 
-    # apply breaks
-    car_controls.brake = 1
-    client.setCarControls(car_controls)
-    print("Apply break")
-    time.sleep(3)   # let car drive a bit
-    car_controls.brake = 0 #remove break
+    # # apply breaks
+    # car_controls.brake = 1
+    # client.setCarControls(car_controls)
+    # print("Apply break")
+    # time.sleep(3)   # let car drive a bit
+    # car_controls.brake = 0 #remove break
     
     # get camera images from the car
     responses = client.simGetImages([
         airsim.ImageRequest("front_left", airsim.ImageType.Scene),
         airsim.ImageRequest("front_center", airsim.ImageType.Scene),
         airsim.ImageRequest("front_right", airsim.ImageType.Scene)
-        # , airsim.ImageRequest("6", airsim.ImageType.Scene),
-        # airsim.ImageRequest("7", airsim.ImageType.Scene),
-        # airsim.ImageRequest("8", airsim.ImageType.Scene),
-        # airsim.ImageRequest("9", airsim.ImageType.Scene),
-        # airsim.ImageRequest("10", airsim.ImageType.Scene),
-        # airsim.ImageRequest("11", airsim.ImageType.Scene)
+        , airsim.ImageRequest("6", airsim.ImageType.Scene),
+        airsim.ImageRequest("7", airsim.ImageType.Scene),
+        airsim.ImageRequest("8", airsim.ImageType.Scene),
+        airsim.ImageRequest("9", airsim.ImageType.Scene),
+        airsim.ImageRequest("10", airsim.ImageType.Scene),
+        airsim.ImageRequest("11", airsim.ImageType.Scene)
         ])  #scene vision image in uncompressed RGBA array
     print('Retrieved images: %d', len(responses))
     cameras = [1,3,4,6,7,8,9,10,11]
