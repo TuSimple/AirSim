@@ -38,14 +38,12 @@ ACarPawn::ACarPawn()
     setupVehicleMovementComponent();
 
     // Create In-Car camera component 
-    constexpr float camera_equiv_ahead1 = 2847; // 3847
-    constexpr float camera_equiv_ahead2 = 1712; // 1712
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(285.5f + camera_equiv_ahead1 ,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
+    camera_front_center_base_->SetRelativeLocation(FVector(285.5f ,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
     camera_front_center_base_->SetupAttachment(GetMesh());
     
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(287 + camera_equiv_ahead2 , 74, 188.5f  )); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(287 , 74, 188.5f  )); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
     
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
@@ -214,12 +212,10 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_left"));
     camera_front_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
     camera_front_left_->AttachToComponent(camera_front_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_right"));
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
 
@@ -241,7 +237,6 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 
 
-
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_driver"));
     camera_driver_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_driver_->AttachToComponent(camera_driver_base_, FAttachmentTransformRules::KeepRelativeTransform);
@@ -256,8 +251,6 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 const common_utils::UniqueValueMap<std::string, APIPCamera*> ACarPawn::getCameras() const
 {
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
 
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
     cameras.insert_or_assign("front_center", camera_front_center_);
@@ -311,34 +304,25 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ACarPawn::Tick(float Delta)
 {
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
+    camera_front_center_->captures_[0]->FOVAngle = 20 ; 
+    camera_front_left_->captures_[0]->FOVAngle = 40 ; 
+    camera_front_right_->captures_[0]->FOVAngle = 60 ; 
     Super::Tick(Delta);
 
     // update physics material
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
     updatePhysicsMaterial();
 
     // Update the strings used in the HUD (in-car and on-screen)
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
     updateHUDStrings();
 
     // Set the string in the in-car HUD
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
     updateInCarHUD();
 
     // Pass the engine RPM to the sound component
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
     engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
 
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
     pawn_events_.getPawnTickSignal().emit(Delta);
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
 }
 
 void ACarPawn::BeginPlay()
@@ -460,8 +444,6 @@ void ACarPawn::onMoveForward(float Val)
         onReverseReleased();
 
     keyboard_controls_.throttle = Val;
-    camera_front_left_->GetCameraComponent()->SetFieldOfView(20); // 20 
-    camera_front_right_->GetCameraComponent()->SetFieldOfView(60); // 60
 }
 
 void ACarPawn::onMoveRight(float Val)

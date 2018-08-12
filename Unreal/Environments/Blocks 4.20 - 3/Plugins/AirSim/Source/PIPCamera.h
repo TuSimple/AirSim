@@ -50,8 +50,8 @@ public:
 
     msr::airlib::Pose getPose() const;
     
-private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
+private: //members
     UPROPERTY() TArray<UTextureRenderTarget2D*> render_targets_;
 
     UPROPERTY() UCameraComponent*  camera_;
