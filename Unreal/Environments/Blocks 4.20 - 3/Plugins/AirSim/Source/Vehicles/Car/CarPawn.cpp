@@ -304,9 +304,13 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ACarPawn::Tick(float Delta)
 {
-    camera_front_center_->captures_[0]->FOVAngle = 20 ; 
-    camera_front_left_->captures_[0]->FOVAngle = 40 ; 
-    camera_front_right_->captures_[0]->FOVAngle = 60 ; 
+    static bool initialized_fov_angle = false; 
+    if (not initialized_fov_angle)    {
+        initialized_fov_angle = true ; 
+        camera_front_center_->captures_[0]->FOVAngle = 20 ; 
+        camera_front_left_->captures_[0]->FOVAngle = 40 ; 
+        camera_front_right_->captures_[0]->FOVAngle = 60 ; 
+    }
     Super::Tick(Delta);
 
     // update physics material
