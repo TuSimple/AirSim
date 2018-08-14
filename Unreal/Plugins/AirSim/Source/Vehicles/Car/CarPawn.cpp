@@ -37,22 +37,47 @@ ACarPawn::ACarPawn()
 
     setupVehicleMovementComponent();
 
-
     // Create In-Car camera component 
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(200, 0, 100)); //center
+    camera_front_center_base_->SetRelativeLocation(FVector(285.5f ,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
     camera_front_center_base_->SetupAttachment(GetMesh());
+    
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(200, -12.5, 100)); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(287 , 74, 188.5f  )); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
+    
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(200, 12.5, 100)); //right
+    camera_front_right_base_->SetRelativeLocation(FVector(287, -31.5f, 188.5f)); //right
     camera_front_right_base_->SetupAttachment(GetMesh());
+
+    // ----------------------------------------------------------------------------------------------------
+    camera_back_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_left_base_"));
+    camera_back_left_base_->SetRelativeLocation(FVector(278, 132, 188.5f)); 
+    camera_back_left_base_->SetRelativeRotation(FRotator(0, 180, 0 )); 
+    camera_back_left_base_->SetupAttachment(GetMesh());
+
+    camera_back_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_right_base_"));
+    camera_back_right_base_->SetRelativeLocation(FVector(278, -132, 188.5f)); 
+    camera_back_right_base_->SetRelativeRotation(FRotator(0, 180, 0 )); 
+    camera_back_right_base_->SetupAttachment(GetMesh());
+
+    camera_spherical_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_spherical_left_base_"));
+    camera_spherical_left_base_->SetRelativeLocation(FVector(298.5f, 132.5f, 188.5f)); // fish-eye, spherical-mirror
+    camera_spherical_left_base_->SetRelativeRotation(FRotator(0, -90, 0 )); 
+    camera_spherical_left_base_->SetupAttachment(GetMesh());
+
+    camera_spherical_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_spherical_right_base_"));
+    camera_spherical_right_base_->SetRelativeLocation(FVector(298.5f, -132.5f, 188.5f)); // fish-eye, spherical-mirror
+    camera_spherical_right_base_->SetRelativeRotation(FRotator(0, 90, 0 )); 
+    camera_spherical_right_base_->SetupAttachment(GetMesh());
+    // ----------------------------------------------------------------------------------------------------
+
     camera_driver_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_driver_base_"));
-    camera_driver_base_->SetRelativeLocation(FVector(0, -25, 125)); //driver
+    camera_driver_base_->SetRelativeLocation(FVector(0, 50, 200)); //driver
     camera_driver_base_->SetupAttachment(GetMesh());
+    
     camera_back_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_center_base_"));
-    camera_back_center_base_->SetRelativeLocation(FVector(-200, 0, 100)); //rear
+    camera_back_center_base_->SetRelativeLocation(FVector(-300, 0, 200)); //rear
     camera_back_center_base_->SetupAttachment(GetMesh());
 
     // In car HUD
@@ -128,7 +153,7 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
     movement->SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
 
-    // Transmission	
+    // Transmission 
     // We want 4wd
     movement->DifferentialSetup.DifferentialType = EVehicleDifferential4W::LimitedSlip_4W;
 
@@ -193,6 +218,25 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     camera_front_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
+
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_back_left"));
+    camera_back_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_back_left_->AttachToComponent(camera_back_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_back_right"));
+    camera_back_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_back_right_->AttachToComponent(camera_back_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_spherical_left"));
+    camera_spherical_left_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_spherical_left_->AttachToComponent(camera_spherical_left_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_spherical_right"));
+    camera_spherical_right_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_spherical_right_->AttachToComponent(camera_spherical_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
+
+
+
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_driver"));
     camera_driver_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_driver_->AttachToComponent(camera_driver_base_, FAttachmentTransformRules::KeepRelativeTransform);
@@ -207,18 +251,32 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 const common_utils::UniqueValueMap<std::string, APIPCamera*> ACarPawn::getCameras() const
 {
+
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
     cameras.insert_or_assign("front_center", camera_front_center_);
     cameras.insert_or_assign("front_right", camera_front_right_);
     cameras.insert_or_assign("front_left", camera_front_left_);
+
+    cameras.insert_or_assign("back_left", camera_back_left_);
+    cameras.insert_or_assign("back_right", camera_back_right_);
+    cameras.insert_or_assign("spherical_left", camera_spherical_left_);
+    cameras.insert_or_assign("spherical_right", camera_spherical_right_);
+
     cameras.insert_or_assign("fpv", camera_driver_);
     cameras.insert_or_assign("back_center", camera_back_center_);
 
-    cameras.insert_or_assign("0", camera_front_center_);
-    cameras.insert_or_assign("1", camera_front_right_);
-    cameras.insert_or_assign("2", camera_front_left_);
-    cameras.insert_or_assign("3", camera_driver_);
-    cameras.insert_or_assign("4", camera_back_center_);
+    cameras.insert_or_assign("1", camera_front_left_);
+    cameras.insert_or_assign("3", camera_front_right_);
+    cameras.insert_or_assign("4", camera_front_center_);
+
+    cameras.insert_or_assign("6", camera_back_left_);
+    cameras.insert_or_assign("7", camera_back_right_);
+
+    cameras.insert_or_assign("8", camera_spherical_right_);
+    cameras.insert_or_assign("9", camera_spherical_left_);
+
+    cameras.insert_or_assign("10", camera_driver_);
+    cameras.insert_or_assign("11", camera_back_center_);
 
     cameras.insert_or_assign("", camera_front_center_);
 
@@ -236,12 +294,23 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     camera_front_center_base_ = nullptr;
     camera_front_left_base_ = nullptr;
     camera_front_right_base_ = nullptr;
+    camera_back_left_base_ = nullptr; 
+    camera_back_right_base_ = nullptr; 
+    camera_spherical_left_base_ = nullptr; 
+    camera_spherical_right_base_ = nullptr; 
     camera_driver_base_ = nullptr;
     camera_back_center_base_ = nullptr;
 }
 
 void ACarPawn::Tick(float Delta)
 {
+    static bool initialized_fov_angle = false; 
+    if (not initialized_fov_angle)    {
+        initialized_fov_angle = true ; 
+        camera_front_center_->captures_[0]->FOVAngle = 20 ; 
+        camera_front_left_->captures_[0]->FOVAngle = 40 ; 
+        camera_front_right_->captures_[0]->FOVAngle = 60 ; 
+    }
     Super::Tick(Delta);
 
     // update physics material
@@ -271,12 +340,12 @@ void ACarPawn::BeginPlay()
 void ACarPawn::updateHUDStrings()
 {
 
-	float speed_unit_factor = AirSimSettings::singleton().speed_unit_factor;
-	FText speed_unit_label = FText::FromString(FString(AirSimSettings::singleton().speed_unit_label.c_str()));
+    float speed_unit_factor = AirSimSettings::singleton().speed_unit_factor;
+    FText speed_unit_label = FText::FromString(FString(AirSimSettings::singleton().speed_unit_label.c_str()));
     float vel = FMath::Abs(GetVehicleMovement()->GetForwardSpeed() / 100); //cm/s -> m/s
     float vel_rounded = FMath::FloorToInt(vel * 10 * speed_unit_factor) / 10.0f;
     int32 Gear = GetVehicleMovement()->GetCurrentGear();
-	
+    
     // Using FText because this is display text that should be localizable
     last_speed_ = FText::Format(LOCTEXT("SpeedFormat", "{0} {1}"), FText::AsNumber(vel_rounded), speed_unit_label);
 
@@ -288,7 +357,6 @@ void ACarPawn::updateHUDStrings()
     {
         last_gear_ = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
     }
-
 
     UAirBlueprintLib::LogMessage(TEXT("Speed: "), last_speed_.ToString(), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessage(TEXT("Gear: "), last_gear_.ToString(), LogDebugLevel::Informational);

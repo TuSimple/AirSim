@@ -81,12 +81,25 @@ private:
     UPROPERTY() USceneComponent* camera_front_center_base_;
     UPROPERTY() USceneComponent* camera_front_left_base_;
     UPROPERTY() USceneComponent* camera_front_right_base_;
+
+    UPROPERTY() USceneComponent* camera_back_left_base_ ; 
+    UPROPERTY() USceneComponent* camera_back_right_base_ ; 
+    UPROPERTY() USceneComponent* camera_spherical_left_base_ ; 
+    UPROPERTY() USceneComponent* camera_spherical_right_base_ ; 
+
     UPROPERTY() USceneComponent* camera_driver_base_;
     UPROPERTY() USceneComponent* camera_back_center_base_;
 
+    // --------------------
     UPROPERTY() APIPCamera* camera_front_center_;
     UPROPERTY() APIPCamera* camera_front_left_;
     UPROPERTY() APIPCamera* camera_front_right_;
+
+    UPROPERTY() APIPCamera* camera_back_left_;
+    UPROPERTY() APIPCamera* camera_back_right_;
+    UPROPERTY() APIPCamera* camera_spherical_left_;
+    UPROPERTY() APIPCamera* camera_spherical_right_;
+
     UPROPERTY() APIPCamera* camera_driver_;
     UPROPERTY() APIPCamera* camera_back_center_;
 
