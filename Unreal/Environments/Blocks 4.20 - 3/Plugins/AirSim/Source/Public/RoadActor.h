@@ -57,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterial* Material_Road;
 
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	bool OnConstruction_Called ; 
 private:
 	void OnConstruction(const FTransform& Transform) override ; 
 
@@ -68,6 +70,5 @@ private:
 	void SetHeight(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float height ) ; 
 	FVector Vector3rToFVector(msr::airlib::Vector3r const& other) ; 
 	std::vector<std::vector<msr::airlib::Vector3r>> TestRoad() ; 
-
-	// UStaticMesh* Mesh_Road ; 
+	
 };
