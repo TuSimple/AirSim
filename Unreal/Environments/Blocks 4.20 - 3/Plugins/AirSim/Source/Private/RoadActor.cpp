@@ -50,6 +50,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 
 	auto road_bounds = getSettings().roads.bounds;
+
 	// road_bounds = TestRoad() ; 
 
 	int NBound = road_bounds.size() ; 
@@ -59,7 +60,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 
 	TranslateTensor3D(road_bounds, -origin) ; 
 	ScaleTensor3D(road_bounds, 100) ; // meter to centimeter.
-	SetHeight(road_bounds, 150) ; // set all z-values
+	SetHeight(road_bounds, 120) ; // set all z-values
 
 	for (int b = 0 ; b < NBound ; b++ )	{
 		auto road_points = road_bounds[b] ; 
@@ -75,7 +76,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 			auto const& road_vector = end_position - start_position ;
 			const float angle = std::atan2(road_vector.X, road_vector.Y) * 180 / M_PI; 
 			const auto len = road_vector.Size() / 100 ; 
-			auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
+			auto const& white_line_3D_scale = FVector( 0.1 , 1 , 1 ) ; 
 			auto const& white_line_translation = FVector(0, 0, -61) + GetTransform().GetLocation() ;
 			auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
 			auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 

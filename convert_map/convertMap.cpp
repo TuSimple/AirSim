@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 
 
   json j ; 
-  Nbound = 1000 ; 
+  Nbound = 5000 ; 
   for (int i = 0; i < Nbound ; ++ i )  {
     auto bound_ptr = ts_road_bounds[i] ;
     std::vector<Point3d> points = bound_ptr->GetSemanticPts();
