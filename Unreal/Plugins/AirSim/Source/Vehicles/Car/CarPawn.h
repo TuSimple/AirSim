@@ -95,10 +95,10 @@ private:
     UPROPERTY() APIPCamera* camera_front_left_;
     UPROPERTY() APIPCamera* camera_front_right_;
 
-    UPROPERTY() APIPCamera* side_view_mirror_left_;
-    UPROPERTY() APIPCamera* side_view_mirror_right_;
-    UPROPERTY() APIPCamera* blind_spot_mirror_left_;
-    UPROPERTY() APIPCamera* blind_spot_mirror_right_;
+    UPROPERTY() APIPCamera* camera_back_left_;
+    UPROPERTY() APIPCamera* camera_back_right_;
+    UPROPERTY() APIPCamera* camera_spherical_left_;
+    UPROPERTY() APIPCamera* camera_spherical_right_;
 
     UPROPERTY() APIPCamera* camera_driver_;
     UPROPERTY() APIPCamera* camera_back_center_;

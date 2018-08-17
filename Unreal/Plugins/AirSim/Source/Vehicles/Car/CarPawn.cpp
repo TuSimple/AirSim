@@ -18,7 +18,6 @@
 
 ACarPawn::ACarPawn()
 {
-    std::cerr << " ACarPawn::ACarPawn is called ?! for test compile" << std::endl ; 
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
 
@@ -40,32 +39,36 @@ ACarPawn::ACarPawn()
 
     // Create In-Car camera component 
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
-    camera_front_center_base_->SetRelativeLocation(FVector(285.5, 0, 188)); //center: fb, lr, ud
+    camera_front_center_base_->SetRelativeLocation(FVector(285.5f ,  0, 188.0f  )); //unit: cm ; center: fb, lr, ud, 
     camera_front_center_base_->SetupAttachment(GetMesh());
     
     camera_front_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_left_base_"));
-    camera_front_left_base_->SetRelativeLocation(FVector(287, 74, 188.5)); //left
+    camera_front_left_base_->SetRelativeLocation(FVector(287 , 74, 188.5f  )); //left
     camera_front_left_base_->SetupAttachment(GetMesh());
     
     camera_front_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_right_base_"));
-    camera_front_right_base_->SetRelativeLocation(FVector(287, -31.5, 188.5)); //right
+    camera_front_right_base_->SetRelativeLocation(FVector(287, -31.5f, 188.5f)); //right
     camera_front_right_base_->SetupAttachment(GetMesh());
 
     // ----------------------------------------------------------------------------------------------------
     camera_back_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_left_base_"));
-    camera_back_left_base_->SetRelativeLocation(FVector(278, 132, 188.5)); 
+    camera_back_left_base_->SetRelativeLocation(FVector(278, 132, 188.5f)); 
+    camera_back_left_base_->SetRelativeRotation(FRotator(0, 180, 0 )); 
     camera_back_left_base_->SetupAttachment(GetMesh());
 
     camera_back_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_back_right_base_"));
-    camera_back_right_base_->SetRelativeLocation(FVector(278, -132, 188.5)); 
+    camera_back_right_base_->SetRelativeLocation(FVector(278, -132, 188.5f)); 
+    camera_back_right_base_->SetRelativeRotation(FRotator(0, 180, 0 )); 
     camera_back_right_base_->SetupAttachment(GetMesh());
 
     camera_spherical_left_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_spherical_left_base_"));
-    camera_spherical_left_base_->SetRelativeLocation(FVector(298.5, 132.5, 188.5)); // fish-eye, spherical-mirror
+    camera_spherical_left_base_->SetRelativeLocation(FVector(298.5f, 132.5f, 188.5f)); // fish-eye, spherical-mirror
+    camera_spherical_left_base_->SetRelativeRotation(FRotator(0, -90, 0 )); 
     camera_spherical_left_base_->SetupAttachment(GetMesh());
 
     camera_spherical_right_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_spherical_right_base_"));
-    camera_spherical_right_base_->SetRelativeLocation(FVector(298.5, -132.5, 188.5)); // fish-eye, spherical-mirror
+    camera_spherical_right_base_->SetRelativeLocation(FVector(298.5f, -132.5f, 188.5f)); // fish-eye, spherical-mirror
+    camera_spherical_right_base_->SetRelativeRotation(FRotator(0, 90, 0 )); 
     camera_spherical_right_base_->SetupAttachment(GetMesh());
     // ----------------------------------------------------------------------------------------------------
 
@@ -234,7 +237,6 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 
 
-
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_driver"));
     camera_driver_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_driver_->AttachToComponent(camera_driver_base_, FAttachmentTransformRules::KeepRelativeTransform);
@@ -249,6 +251,7 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
 const common_utils::UniqueValueMap<std::string, APIPCamera*> ACarPawn::getCameras() const
 {
+
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
     cameras.insert_or_assign("front_center", camera_front_center_);
     cameras.insert_or_assign("front_right", camera_front_right_);
@@ -301,6 +304,13 @@ void ACarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ACarPawn::Tick(float Delta)
 {
+    static bool initialized_fov_angle = false; 
+    if (not initialized_fov_angle)    {
+        initialized_fov_angle = true ; 
+        camera_front_center_->captures_[0]->FOVAngle = 20 ; 
+        camera_front_left_->captures_[0]->FOVAngle = 40 ; 
+        camera_front_right_->captures_[0]->FOVAngle = 60 ; 
+    }
     Super::Tick(Delta);
 
     // update physics material
@@ -347,7 +357,6 @@ void ACarPawn::updateHUDStrings()
     {
         last_gear_ = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
     }
-
 
     UAirBlueprintLib::LogMessage(TEXT("Speed: "), last_speed_.ToString(), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessage(TEXT("Gear: "), last_gear_.ToString(), LogDebugLevel::Informational);
