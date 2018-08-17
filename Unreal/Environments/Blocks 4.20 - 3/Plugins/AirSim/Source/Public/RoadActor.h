@@ -46,17 +46,25 @@ public:
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UStaticMesh* Mesh_WhiteLine ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* Material_WhiteLine;
+	UMaterialInstance* MaterialInstance_WhiteLine;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterial* Material_WhiteLine;
 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UStaticMesh* Mesh_Road ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* Material_Road;
+	UMaterialInstance* MaterialInstance_Road;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterial* Material_Road;
 
 private:
 	void OnConstruction(const FTransform& Transform) override ; 
+
 	void AddSplineSegment(FVector const& start_position, FVector const& end_position,
 		UStaticMesh* use_mesh, UMaterialInstance* use_material, FVector const& material_geometry, FTransform const& tran = FTransform::Identity ) ; 
+	void AddSplineSegment(FVector const& start_position, FVector const& end_position,
+		UStaticMesh* use_mesh, UMaterial* use_material, FVector const& material_geometry, FTransform const& tran = FTransform::Identity ) ; 
+
 	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
 	void TranslateTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, FVector const& movement ) ; 
 	void SetHeight(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float height ) ; 

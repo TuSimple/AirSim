@@ -272,6 +272,13 @@ public: //types
         float update_interval_secs = 60;
     };
 
+    struct RoadSetting{
+
+        // std::vector<Vector3r> points ; 
+
+        std::vector<std::vector<Vector3r>> lanes ; 
+    } ;
+
 private: //fields
     float settings_version_actual;
     float settings_version_minimum = 1.2f;
@@ -305,6 +312,8 @@ public: //fields
 	  float speed_unit_factor =  1.0f;
 	  std::string speed_unit_label = "m\\s";
 
+    RoadSetting roads ; 
+
 public: //methods
     static AirSimSettings& singleton() 
     {
@@ -337,6 +346,8 @@ public: //methods
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
         loadVehicleSettings(simmode_name, settings_json, vehicles);
+
+        loadRoadSettings(settings_json, roads);
 
         //this should be done last because it depends on type of vehicles we have
         loadClockSettings(settings_json);
@@ -724,6 +735,34 @@ private:
                 msr::airlib::Settings child;
                 vehicles_child.getChild(key, child);
                 vehicles[key] = createVehicleSetting(simmode_name, child, key);
+            }
+        }
+    }
+
+    static void loadRoadSettings(const Settings& settings_json, RoadSetting& roads)
+    {
+        msr::airlib::Settings child_lanes;
+        if ( settings_json.getChild("RoadPoints", child_lanes) ) {
+            std::vector<std::string> lanes ; 
+            child_lanes.getChildNames(lanes);
+            int Nlane = lanes.size() ; 
+            for (int l = 0 ; l < Nlane ; l ++ ){
+                msr::airlib::Settings lane;
+                child_lanes.getChild(lanes[l] , lane);
+
+                std::vector<std::string> points ; 
+                lane.getChildNames(points);
+                
+                int Npoints = points.size() ; 
+                std::vector<Vector3r> OneLaneResult(Npoints) ;
+                for (int p = 0; p < Npoints; ++p ) {
+                    msr::airlib::Settings pointValues ;
+                    lane.getChild(std::to_string(p), pointValues);
+                    OneLaneResult[p] = Vector3r(pointValues.getFloat("X", 0.0f ), 
+                                        pointValues.getFloat("Y", 0.0f ), 
+                                        pointValues.getFloat("Z", 0.0f )) ;
+                }
+                roads.lanes.push_back(OneLaneResult) ;
             }
         }
     }

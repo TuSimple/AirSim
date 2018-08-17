@@ -15,9 +15,10 @@ ARoadActor::ARoadActor()
     // static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_WhiteLine(TEXT("/Game/ModularRoads01/Meshes/Road_Parts/Road_Markings/SM_Line_White_01")); // 90 degrees
 	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/Game/ModularRoads01/Materials/MI_Road_Markings_01"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_WhiteLine(TEXT("/Game/Geometry/Meshes/1M_Cube")); // 90 degrees
-	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/AirSim/Models/MiniQuadCopter/Prop_White_Plastic"));
 	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/AirSim/VehicleAdv/SUV/AutomotiveMaterials/Materials/Glass/Headlights"));
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_02"));
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_02"));
+	// static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_WhiteLine(TEXT("/AirSim/Modelds/MiniQuadCopter/Prop_White_Plastic"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_WhiteLine(TEXT("/Game/ModularRoads01/Materials/Master/M_Master_Material_Alpha_01"));
 
     static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_Road(TEXT("/Game/ModularRoads01/Meshes/Road_Parts/Roads/Style_A/Full_Size/SM_Road_A_01"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_Road(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_01"));
@@ -44,7 +45,7 @@ ARoadActor::ARoadActor()
 		Mesh_Road = FoundMesh_Road.Object ; 
 	}
 	if (FoundMaterial_Road.Succeeded()) {
-		Material_Road = FoundMaterial_Road.Object ; 
+		MaterialInstance_Road = FoundMaterial_Road.Object ; 
 	}
 }
 void ARoadActor::OnConstruction(const FTransform& Transform) {
@@ -52,15 +53,15 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 
 	auto road_lanes = getSettings().roads.lanes;
 
-	road_lanes = TestRoad() ; 
+	// road_lanes = TestRoad() ; 
 
 	int Nlane = road_lanes.size() ; 
 	std::cerr << "ARoadActor::OnConstruction --> Nlane=" << Nlane  << std::endl ;
 
 	FVector origin = FVector( road_lanes[0][0][0], road_lanes[0][0][1], road_lanes[0][0][2] ) ; 
 
-	ScaleTensor3D(road_lanes, 100) ; // meter to centimeter.
 	TranslateTensor3D(road_lanes, -origin) ; 
+	ScaleTensor3D(road_lanes, 100) ; // meter to centimeter.
 	SetHeight(road_lanes, 200) ; // set all z-values
 
 	for (auto const& road_points: road_lanes)
@@ -68,7 +69,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 		int Npoints = road_points.size() ; 
 
 		std::cerr << " Npoints = " << Npoints << std::endl ; 
-		Npoints = 3 ;  
+		// Npoints = 3 ;  
 		// for (int i = 0; i < Npoints ; ++i)	{
 		// 	std::cerr << "OnConstruction road_points=" << road_points[i] << std::endl ;
 		// }
@@ -89,12 +90,19 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 			const auto len = road_vector.Size() / 100 ; 
 			std::cerr << " angle = " << angle << std::endl ;
 			std::cerr << " len   = " << len << std::endl ;
-			auto const& white_line_3D_scale = FVector( len , 0.2f , 1 ) ; 
-			auto const& white_line_translation = start_position + FVector(0, 0, 500) + GetTransform().GetLocation() ; 
-			auto const& white_line_quat = FQuat( FRotator(0, angle, 0 ) ) ; // degrees. pitch, yaw, roll.
+			auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
+			auto const& white_line_translation = FVector(0, 0, -61) + GetTransform().GetLocation() ;
+			auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
 			auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 
 			auto const& material_geometry = FVector(100, 0, 0) ; 
 			AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, material_geometry, white_line_transform ) ; 
+
+			// -------------------------------------------------------
+			auto const& road_3D_scale = FVector( 1 , 1 , 1 ) ; 
+			auto const& road_translation = FVector(0, 0, 0) + GetTransform().GetLocation() ;
+			auto const& road_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
+			auto const& road_transform = FTransform(road_quat, road_translation, road_3D_scale) ; 
+			AddSplineSegment( start_position, end_position, Mesh_Road, MaterialInstance_Road, material_geometry, road_transform ) ; 
 		}
 	}
 
@@ -122,16 +130,16 @@ void ARoadActor::Tick(float DeltaTime)
 void ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& end_position,
 	UStaticMesh* use_mesh, UMaterialInstance* use_material, FVector const& material_geometry, FTransform const& extra_transform )
 {
-	FVector tangent =  FVector( 1, 0, 0 ) ;
-	FVector material_origin = FVector( 0, 0, 0 ) ;
+	FVector road_vector = end_position - start_position ;
+	FVector tangent =  road_vector.ToOrientationRotator().Vector();
 
 	USplineMeshComponent* LaneSplineMesh = NewObject<USplineMeshComponent>(this);
 
 	LaneSplineMesh->SetupAttachment(RootComponent);
 
-	LaneSplineMesh->SetStartPosition( material_origin );
+	LaneSplineMesh->SetStartPosition( start_position );
 	LaneSplineMesh->SetStartTangent( tangent ) ; 
-	LaneSplineMesh->SetEndPosition( material_geometry );
+	LaneSplineMesh->SetEndPosition( end_position );
 	LaneSplineMesh->SetEndTangent( tangent ) ; 
 
 	LaneSplineMesh->SetStaticMesh(use_mesh);
@@ -150,11 +158,42 @@ void ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& 
 	
 }
 
+void ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& end_position,
+	UStaticMesh* use_mesh, UMaterial* use_material, FVector const& material_geometry, FTransform const& extra_transform )
+{
+	FVector road_vector = end_position - start_position ;
+	FVector tangent =  road_vector.ToOrientationRotator().Vector();
+
+	USplineMeshComponent* LaneSplineMesh = NewObject<USplineMeshComponent>(this);
+
+	LaneSplineMesh->SetupAttachment(RootComponent);
+
+	LaneSplineMesh->SetStartPosition( start_position );
+	LaneSplineMesh->SetStartTangent( tangent ) ; 
+	LaneSplineMesh->SetEndPosition( end_position );
+	LaneSplineMesh->SetEndTangent( tangent ) ; 
+
+	LaneSplineMesh->SetStaticMesh(use_mesh);
+
+	DynamicMaterialInst = UMaterialInstanceDynamic::Create(use_material, LaneSplineMesh);
+	LaneSplineMesh->SetMaterial(0, DynamicMaterialInst);
+
+	FQuat quat = FQuat(end_position - start_position, 0) ; 
+	LaneSplineMesh->SetWorldTransform( /*FTransform(quat, start_position) +*/ extra_transform  ) ; 
+
+	LaneSplineMesh->SetCollisionProfileName(TEXT("Vehicle")) ; 
+
+	LaneSplineMesh->UpdateMesh();
+	LaneSplineMesh->SetMobility(EComponentMobility::Static);
+	LaneSplineMesh->RegisterComponent();
+	
+}
 
 std::vector<std::vector<msr::airlib::Vector3r>> ARoadActor::TestRoad(){
-	msr::airlib::Vector3r point1 = msr::airlib::Vector3r(0,0, 0) ; 
-	msr::airlib::Vector3r point2 = msr::airlib::Vector3r(0,5,0) ; 
-	msr::airlib::Vector3r point3 = msr::airlib::Vector3r(3,8,0) ; 
+	msr::airlib::Vector3r offset = msr::airlib::Vector3r(6,6,6) ; 
+	msr::airlib::Vector3r point1 = msr::airlib::Vector3r(0,0,0) + offset ; 
+	msr::airlib::Vector3r point2 = msr::airlib::Vector3r(0,5,0) + offset ; 
+	msr::airlib::Vector3r point3 = msr::airlib::Vector3r(3,8,0) + offset ; 
 
 	std::vector<msr::airlib::Vector3r> lane1 = {point1, point2, point3 } ; 
 	int Npoint = lane1.size(); 
@@ -164,8 +203,8 @@ std::vector<std::vector<msr::airlib::Vector3r>> ARoadActor::TestRoad(){
 		lane2[i] += msr::airlib::Vector3r( 3.7, 0, 0 ) ; 
 		lane3[i] += msr::airlib::Vector3r( 7.4, 0, 0 ) ;
 	}
-	// return {lane1, lane2, lane3} ; 
-	return {lane1} ; 
+	return {lane1, lane2, lane3} ; 
+	// return {lane1} ; 
 }
 
 void ARoadActor::ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ){
