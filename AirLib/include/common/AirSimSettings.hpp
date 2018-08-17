@@ -277,6 +277,7 @@ public: //types
         // std::vector<Vector3r> points ; 
 
         std::vector<std::vector<Vector3r>> lanes ; 
+        std::vector<std::vector<Vector3r>> bounds ; 
     } ;
 
 private: //fields
@@ -763,6 +764,33 @@ private:
                                         pointValues.getFloat("Z", 0.0f )) ;
                 }
                 roads.lanes.push_back(OneLaneResult) ;
+            }
+            // -----------------------------------
+            // Bounds
+            // -----------------------------------
+            msr::airlib::Settings child_bounds;
+            settings_json.getChild("Bounds", child_bounds);
+            std::vector<std::string> child_bound_names ; 
+            child_bounds.getChildNames(child_bound_names);
+            int Nbound = child_bound_names.size() ; 
+            for (int b = 0; b < Nbound; ++b){
+                msr::airlib::Settings bound_one;
+                child_bound_names.getChild(child_bound_names[b], bound_one) ; 
+
+                std::vector<std::string> points_names ;
+                bound_one.getChildNames(points_names);
+
+                int Npoints = points_names.size() ; 
+                std::vector<Vector3r> OneBoundResult(Npoints) ;
+
+                for (int i = 0; i < Npoints; ++i){
+                    msr::airlib::Settings pointValues ;
+                    lane.getChild(points_names(i), pointValues);
+                    OneBoundResult[p] = Vector3r(pointValues.getFloat("X", 0.0f ), 
+                                        pointValues.getFloat("Y", 0.0f ), 
+                                        pointValues.getFloat("Z", 0.0f )) ;
+                }
+                roads.bounds.push_back(OneBoundResult) ;
             }
         }
     }
