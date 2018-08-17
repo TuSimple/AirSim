@@ -61,9 +61,7 @@ private:
 	void OnConstruction(const FTransform& Transform) override ; 
 
 	void AddSplineSegment(FVector const& start_position, FVector const& end_position,
-		UStaticMesh* use_mesh, UMaterialInstance* use_material, FVector const& material_geometry, FTransform const& tran = FTransform::Identity ) ; 
-	void AddSplineSegment(FVector const& start_position, FVector const& end_position,
-		UStaticMesh* use_mesh, UMaterial* use_material, FVector const& material_geometry, FTransform const& tran = FTransform::Identity ) ; 
+	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FTransform const& extra_transform ) ; 
 
 	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
 	void TranslateTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, FVector const& movement ) ; 
