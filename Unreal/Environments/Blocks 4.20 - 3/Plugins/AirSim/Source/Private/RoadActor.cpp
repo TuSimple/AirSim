@@ -68,7 +68,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 		int Npoints = road_points.size() ; 
 
 		std::cerr << " Npoints = " << Npoints << std::endl ; 
-		Npoints = 2 ;  
+		Npoints = 3 ;  
 		// for (int i = 0; i < Npoints ; ++i)	{
 		// 	std::cerr << "OnConstruction road_points=" << road_points[i] << std::endl ;
 		// }
@@ -90,8 +90,8 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 			std::cerr << " angle = " << angle << std::endl ;
 			std::cerr << " len   = " << len << std::endl ;
 			auto const& white_line_3D_scale = FVector( len , 0.2f , 1 ) ; 
-			auto const& white_line_translation = start_position + FVector(0, 0, 500) ; 
-			auto const& white_line_quat = FQuat( FRotator(0, angle, 0 ) ) ; // degrees? pitch, yaw, roll.
+			auto const& white_line_translation = start_position + FVector(0, 0, 500) + GetTransform().GetLocation() ; 
+			auto const& white_line_quat = FQuat( FRotator(0, angle, 0 ) ) ; // degrees. pitch, yaw, roll.
 			auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 
 			auto const& material_geometry = FVector(100, 0, 0) ; 
 			AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, material_geometry, white_line_transform ) ; 
@@ -140,7 +140,7 @@ void ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& 
 	LaneSplineMesh->SetMaterial(0, DynamicMaterialInst);
 
 	FQuat quat = FQuat(end_position - start_position, 0) ; 
-	LaneSplineMesh->SetWorldTransform( /*FTransform(quat, start_position) +*/ extra_transform - this->GetTransform() ) ; 
+	LaneSplineMesh->SetWorldTransform( /*FTransform(quat, start_position) +*/ extra_transform  ) ; 
 
 	LaneSplineMesh->SetCollisionProfileName(TEXT("Vehicle")) ; 
 
