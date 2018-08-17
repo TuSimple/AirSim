@@ -23,8 +23,6 @@ ARoadActor::ARoadActor()
     static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_Road(TEXT("/Game/ModularRoads01/Meshes/Road_Parts/Roads/Style_A/Full_Size/SM_Road_A_01"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_Road(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_01"));
 	// static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_Road(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_02"));
-	// MaterialInstanceConstant'/Game/ModularRoads01/Materials/MI_Asphalt_02.MI_Asphalt_02'
-	// MaterialInstanceConstant'/Game/ModularRoads01/Materials/MI_Road_Markings_01.MI_Road_Markings_01'
 
 	// static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/AsphaltConcreteRoads/Materials/Mat1_master_tessel"));
 	// '/Game/ModularRoads01/Materials/MI_Asphalt_01'
@@ -51,45 +49,32 @@ ARoadActor::ARoadActor()
 void ARoadActor::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 
-	auto road_lanes = getSettings().roads.lanes;
+	auto road_bounds = getSettings().roads.bounds;
+	// road_bounds = TestRoad() ; 
 
-	// road_lanes = TestRoad() ; 
+	int NBound = road_bounds.size() ; 
+	std::cerr << "ARoadActor::OnConstruction --> NBound=" << NBound  << std::endl ;
 
-	int Nlane = road_lanes.size() ; 
-	std::cerr << "ARoadActor::OnConstruction --> Nlane=" << Nlane  << std::endl ;
+	FVector origin = FVector( road_bounds[0][0][0], road_bounds[0][0][1], road_bounds[0][0][2] ) ; 
 
-	FVector origin = FVector( road_lanes[0][0][0], road_lanes[0][0][1], road_lanes[0][0][2] ) ; 
+	TranslateTensor3D(road_bounds, -origin) ; 
+	ScaleTensor3D(road_bounds, 100) ; // meter to centimeter.
+	SetHeight(road_bounds, 200) ; // set all z-values
 
-	TranslateTensor3D(road_lanes, -origin) ; 
-	ScaleTensor3D(road_lanes, 100) ; // meter to centimeter.
-	SetHeight(road_lanes, 200) ; // set all z-values
-
-	for (auto const& road_points: road_lanes)
-	{
+	for (int b = 0 ; b < NBound ; b++ )	{
+		auto road_points = road_bounds[b] ; 
 		int Npoints = road_points.size() ; 
-
-		std::cerr << " Npoints = " << Npoints << std::endl ; 
-		// Npoints = 3 ;  
-		// for (int i = 0; i < Npoints ; ++i)	{
-		// 	std::cerr << "OnConstruction road_points=" << road_points[i] << std::endl ;
-		// }
-
-		// FVector position = FVector( road_points[0][0], road_points[0][1], road_points[0][2] ) ; 
-
 		for (int i = 1; i < Npoints; ++i)	{
-			std::cerr << " ---------------------------------------------- " << std::endl ; 
-			std::cerr << " road_points.at(i-1) = " << road_points.at(i-1) << std::endl ; 
-			std::cerr << " road_points.at(i) = " << road_points.at(i) << std::endl ; 
 
 			auto const& start_position = Vector3rToFVector(road_points.at(i-1) ) ; 
 			auto const& end_position = Vector3rToFVector(road_points.at(i) ) ; 
 
 			// -------------------------------------------------------
+			// Road Single lines
+			// -------------------------------------------------------
 			auto const& road_vector = end_position - start_position ;
 			const float angle = std::atan2(road_vector.X, road_vector.Y) * 180 / M_PI; 
 			const auto len = road_vector.Size() / 100 ; 
-			std::cerr << " angle = " << angle << std::endl ;
-			std::cerr << " len   = " << len << std::endl ;
 			auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
 			auto const& white_line_translation = FVector(0, 0, -61) + GetTransform().GetLocation() ;
 			auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
@@ -98,6 +83,8 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 			AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, material_geometry, white_line_transform ) ; 
 
 			// -------------------------------------------------------
+			// Road Plates
+			// -------------------------------------------------------
 			auto const& road_3D_scale = FVector( 1 , 1 , 1 ) ; 
 			auto const& road_translation = FVector(0, 0, 0) + GetTransform().GetLocation() ;
 			auto const& road_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
@@ -105,12 +92,6 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 			AddSplineSegment( start_position, end_position, Mesh_Road, MaterialInstance_Road, material_geometry, road_transform ) ; 
 		}
 	}
-
-	
-
-
-
-
 
 }
 
