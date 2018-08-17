@@ -13,8 +13,9 @@
 #include "CircularQueue.h"
 #include "Array.h"
 
-// #include "tsmap/tsmap.h"
+// Airsim
 #include "common/AirSimSettings.hpp"
+#include "common/Common.hpp"
 
 #include "RoadActor.generated.h"
 
@@ -38,16 +39,29 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	TArray<USplineMeshComponent*> LaneSplineMeshes_ ;
-	
-	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterial* StoredMaterial;
-	
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterialInstanceDynamic* DynamicMaterialInst;
 
+
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UStaticMesh* Mesh_WhiteLine ; 
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* Material_WhiteLine;
+
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UStaticMesh* Mesh_Road ; 
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* Material_Road;
+
 private:
 	void OnConstruction(const FTransform& Transform) override ; 
+	void AddSplineSegment(FVector const& start_position, FVector const& end_position,
+		UStaticMesh* use_mesh, UMaterialInstance* use_material, FVector const& material_geometry, FTransform const& tran = FTransform::Identity ) ; 
+	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
+	void TranslateTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, FVector const& movement ) ; 
+	void SetHeight(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float height ) ; 
+	FVector Vector3rToFVector(msr::airlib::Vector3r const& other) ; 
+	std::vector<std::vector<msr::airlib::Vector3r>> TestRoad() ; 
 
-	UStaticMesh* DefaultMesh ; 
+	// UStaticMesh* Mesh_Road ; 
 };
