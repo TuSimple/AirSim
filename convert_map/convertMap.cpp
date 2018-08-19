@@ -56,16 +56,16 @@ int main(int argc, char **argv) {
 
 
   json j ; 
-  Nbound = 5000 ; 
+  Nbound = 1000 ; 
   for (int i = 0; i < Nbound ; ++ i )  {
     auto bound_ptr = ts_road_bounds[i] ;
     std::vector<Point3d> points = bound_ptr->GetSemanticPts();
     j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(0) ]["X"] = points[0].x ; 
     j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(0) ]["Y"] = points[0].y ; 
-    j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(0) ]["Z"] = points[0].z ; 
+    j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(0) ]["Z"] = points[0].z ; // airsim use NED coordinate
     j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(1) ]["X"] = points.back().x ; 
     j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(1) ]["Y"] = points.back().y ; 
-    j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(1) ]["Z"] = points.back().z ; 
+    j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(1) ]["Z"] = points.back().z ; // airsim use NED coordinate
     // std::ofstream bound_file ;
     // bound_file.open("points"+ std::to_string(i) + ".txt") ;
     // bound_file << points[0].x << " " << points[0].y << std::endl; 
@@ -82,28 +82,4 @@ int main(int argc, char **argv) {
 
   return 0 ;   
 }
-
-// "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
-// "SettingsVersion": 1.2,
-// "CameraDefaults": {
-//     "CaptureSettings": [
-//       {
-//         "ImageType": 0,
-//         "Width": 1024,
-//         "Height": 576,
-//         "FOV_Degrees": 90,
-//         "AutoExposureSpeed": 100,
-//         "MotionBlurAmount": 0
-//       }
-//   ]
-// },
-// "Vehicles": {
-//   "SUV": {
-//     "VehicleType": "PhysXCar",
-//     "X": 0, "Y": 0, "Z": 0,
-//     "Pitch": 0, "Roll": 0, "Yaw": -20,
-//   }
-// }
-
-
 

@@ -14,7 +14,9 @@ ARoadActor::ARoadActor()
 
     // static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_WhiteLine(TEXT("/Game/ModularRoads01/Meshes/Road_Parts/Road_Markings/SM_Line_White_01")); // 90 degrees
 	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/Game/ModularRoads01/Materials/MI_Road_Markings_01"));
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_WhiteLine(TEXT("/Game/Geometry/Meshes/1M_Cube")); // 90 degrees
+    // static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_WhiteLine(TEXT("/Game/Geometry/Meshes/1M_Cube")); // 90 degrees
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_WhiteLine(TEXT("/Game/AsphaltConcreteRoads/Meshes/cube9")); // 90 degrees
+    // StaticMesh'/Game/AsphaltConcreteRoads/Meshes/cube9.cube9'
 	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/AirSim/VehicleAdv/SUV/AutomotiveMaterials/Materials/Glass/Headlights"));
 	// static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_WhiteLine(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_02"));
 	// static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_WhiteLine(TEXT("/AirSim/Modelds/MiniQuadCopter/Prop_White_Plastic"));
@@ -81,7 +83,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 				const float angle = std::atan2(road_vector.X, road_vector.Y) * 180 / M_PI; 
 				const auto len = road_vector.Size() / 100 ; 
 				auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
-				auto const& white_line_translation = FVector(0, 0, -61) + GetTransform().GetLocation() ;
+				auto const& white_line_translation = FVector(0, 0, -10) + GetTransform().GetLocation() ;
 				auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
 				auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 
 				AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, TEXT("NoCollision") , white_line_transform ) ; 
