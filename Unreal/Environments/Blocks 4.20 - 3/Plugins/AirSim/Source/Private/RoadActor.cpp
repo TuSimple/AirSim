@@ -62,11 +62,16 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 		int NBound = road_bounds.size() ; 
 		std::cerr << "ARoadActor::OnConstruction --> NBound=" << NBound  << std::endl ;
 
-		FVector origin = FVector( road_bounds[0][0][0], road_bounds[0][0][1], road_bounds[0][0][2] ) ; 
-
+		
+		FVector origin = MinTensor3D(road_bounds); 
+		std::cerr << " origin = " << origin.X << " " << origin.Y << " " << origin.Z << std::endl; 
 		TranslateTensor3D(road_bounds, -origin) ; 
+
+		FVector increase_height = FVector( 0, 0, 5) ; // 5 meter
+		TranslateTensor3D(road_bounds, increase_height) ; 
+
 		ScaleTensor3D(road_bounds, 100) ; // meter to centimeter.
-		SetHeight(road_bounds, 120) ; // set all z-values
+		// SetHeight(road_bounds, 120) ; // set all z-values
 
 		for (int b = 0 ; b < NBound ; b++ )	{
 			auto road_points = road_bounds[b] ; 
@@ -75,6 +80,8 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 
 				auto const& start_position = Vector3rToFVector(road_points.at(i-1) ) ; 
 				auto const& end_position = Vector3rToFVector(road_points.at(i) ) ; 
+
+				std::cerr << " position 1,2 = " << road_points.at(i-1) << " , " << road_points.at(i) << std::endl ; 
 
 				// -------------------------------------------------------
 				// Road Single lines
@@ -199,6 +206,17 @@ FVector ARoadActor::Vector3rToFVector(msr::airlib::Vector3r const& other){
 	sol.X = other[0] ; 
 	sol.Y = other[1] ; 
 	sol.Z = other[2] ; 
+	return sol ; 
+}
+FVector ARoadActor::MinTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> const& road_bounds){
+	FVector sol(1e30, 1e30, 1e30) ; 
+	for ( auto const& mat: road_bounds ){
+		for ( auto const& vec: mat ){
+			sol[0] = std::min( vec[0], sol[0] );
+			sol[1] = std::min( vec[1], sol[1] );
+			sol[2] = std::min( vec[2], sol[2] );
+		}
+	}
 	return sol ; 
 }
 

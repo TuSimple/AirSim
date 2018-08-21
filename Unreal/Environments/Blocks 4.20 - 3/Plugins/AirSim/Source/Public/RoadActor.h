@@ -67,6 +67,7 @@ private:
 
 	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
 	void TranslateTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, FVector const& movement ) ; 
+	FVector MinTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> const& road_bounds);
 	void SetHeight(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float height ) ; 
 	FVector Vector3rToFVector(msr::airlib::Vector3r const& other) ; 
 	std::vector<std::vector<msr::airlib::Vector3r>> TestRoad() ; 
