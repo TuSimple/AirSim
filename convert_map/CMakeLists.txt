@@ -43,14 +43,27 @@ add_executable( ${eJson}
 
 
 
-set(exeConvertMap "myConvertMap.app")
-add_executable( ${exeConvertMap}
-	convertMap.cpp
+set(exeConvertMapBounds "myConvertMapBounds.app")
+add_executable( ${exeConvertMapBounds}
+	ConvertMapBounds.cpp
 )
-target_link_libraries( ${exeConvertMap}
+target_link_libraries( ${exeConvertMapBounds}
 	tsmap2
 )
-target_include_directories( ${exeConvertMap}
+target_include_directories( ${exeConvertMapBounds}
+	PUBLIC
+	${RAPIDJSON_INCLUDE_DIRS}
+)
+
+
+set(exeConvertMapLanes "myConvertMapLanes.app")
+add_executable( ${exeConvertMapLanes}
+	ConvertMapLanes.cpp
+)
+target_link_libraries( ${exeConvertMapLanes}
+	tsmap2
+)
+target_include_directories( ${exeConvertMapLanes}
 	PUBLIC
 	${RAPIDJSON_INCLUDE_DIRS}
 )

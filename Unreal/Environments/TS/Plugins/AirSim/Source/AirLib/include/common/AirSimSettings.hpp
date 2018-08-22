@@ -273,11 +273,9 @@ public: //types
     };
 
     struct RoadSetting{
-
-        // std::vector<Vector3r> points ; 
-
-        std::vector<std::vector<Vector3r>> lanes ; 
-        std::vector<std::vector<Vector3r>> bounds ; 
+        std::vector<std::vector<Vector3r>> bounds ;           // vector of segments: each segment has two-points
+        std::vector<std::vector<Vector3r>> bounds_leftmost ;  // vector of segments: each segment has two-points
+        std::vector<std::vector<Vector3r>> bounds_rightmost ; // vector of segments: each segment has two-points
     } ;
 
 private: //fields
@@ -744,54 +742,57 @@ private:
     {
         msr::airlib::Settings child_roads;
         if ( settings_json.getChild("RoadPoints", child_roads) ) {
-            std::vector<std::string> lanes ; 
-            child_roads.getChildNames(lanes);
-            int Nlane = lanes.size() ; 
-            for (int l = 0 ; l < Nlane ; l ++ ){
-                msr::airlib::Settings lane;
-                child_roads.getChild(lanes[l] , lane);
-
-                std::vector<std::string> points ; 
-                lane.getChildNames(points);
-                
-                int Npoints = points.size() ; 
-                std::vector<Vector3r> OneLaneResult(Npoints) ;
-                for (int p = 0; p < Npoints; ++p ) {
-                    msr::airlib::Settings pointValues ;
-                    lane.getChild(std::to_string(p), pointValues);
-                    OneLaneResult[p] = Vector3r(pointValues.getFloat("X", 0.0f ), 
-                                        pointValues.getFloat("Y", 0.0f ), 
-                                        pointValues.getFloat("Z", 0.0f )) ;
-                }
-                roads.lanes.push_back(OneLaneResult) ;
-            }
             // -----------------------------------
             // Bounds
             // -----------------------------------
-            msr::airlib::Settings child_bounds ; 
-            child_roads.getChild("Bounds", child_bounds);
-            std::vector<std::string> child_bound_names ; 
-            child_bounds.getChildNames(child_bound_names);
-            int Nbound = child_bound_names.size() ; 
-            for (int b = 0; b < Nbound; ++b){
-                msr::airlib::Settings bound_one;
-                child_bounds.getChild(child_bound_names[b], bound_one) ; 
-
-                std::vector<std::string> points_names ;
-                bound_one.getChildNames(points_names);
-
-                int Npoints = points_names.size() ; 
-                std::vector<Vector3r> OneBoundResult(Npoints) ;
-
-                for (int p = 0; p < Npoints; ++p){
-                    msr::airlib::Settings pointValues ;
-                    bound_one.getChild(points_names[p], pointValues);
-                    OneBoundResult[p] = Vector3r(pointValues.getFloat("X", 0.0f ), 
-                                        pointValues.getFloat("Y", 0.0f ), 
-                                        pointValues.getFloat("Z", 0.0f )) ;
-                }
-                roads.bounds.push_back(OneBoundResult) ;
+            {
+                msr::airlib::Settings child_bounds ; 
+                child_roads.getChild("Bounds", child_bounds);
+                loadRoadBoundSettings(child_bounds, roads.bounds) ;
             }
+            // -----------------------------------
+            // LeftBounds
+            // -----------------------------------
+            {
+                msr::airlib::Settings child_bounds ; 
+                child_roads.getChild("LeftBounds", child_bounds);
+                loadRoadBoundSettings(child_bounds, roads.bounds_leftmost) ;
+            }
+            // -----------------------------------
+            // RightBounds
+            // -----------------------------------
+            {
+                msr::airlib::Settings child_bounds ; 
+                child_roads.getChild("RightBounds", child_bounds);
+                loadRoadBoundSettings(child_bounds, roads.bounds_rightmost) ;
+            }
+            
+        }
+    }
+
+    static void loadRoadBoundSettings(const Settings& child_bounds, std::vector<std::vector<Vector3r>>& bounds){
+        bounds.clear();
+        std::vector<std::string> child_bound_names ; 
+        child_bounds.getChildNames(child_bound_names);
+        int Nbound = child_bound_names.size() ; 
+        for (int b = 0; b < Nbound; ++b){
+            msr::airlib::Settings bound_one;
+            child_bounds.getChild(child_bound_names[b], bound_one) ; 
+
+            std::vector<std::string> points_names ;
+            bound_one.getChildNames(points_names);
+
+            int Npoints = points_names.size() ; 
+            std::vector<Vector3r> OneBoundResult(Npoints) ;
+
+            for (int p = 0; p < Npoints; ++p){
+                msr::airlib::Settings pointValues ;
+                bound_one.getChild(points_names[p], pointValues);
+                OneBoundResult[p] = Vector3r(pointValues.getFloat("X", 0.0f ), 
+                                    pointValues.getFloat("Y", 0.0f ), 
+                                    pointValues.getFloat("Z", 0.0f )) ;
+            }
+            bounds.push_back(OneBoundResult) ;
         }
     }
 

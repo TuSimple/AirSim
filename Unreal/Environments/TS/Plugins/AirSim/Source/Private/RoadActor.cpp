@@ -55,28 +55,32 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 		OnConstruction_Called = true ; 
 
 		auto road_bounds = getSettings().roads.bounds;
+		auto road_bounds_leftmost = getSettings().roads.bounds_leftmost;
 
 		// road_bounds = TestRoad() ; 
 
 		int NBound = road_bounds.size() ; 
+		int NBound_leftmost = road_bounds_leftmost.size() ; 
 		std::cerr << "ARoadActor::OnConstruction --> NBound=" << NBound  << std::endl ;
+		std::cerr << "ARoadActor::OnConstruction --> NBound_leftmost=" << NBound_leftmost  << std::endl ;
 
 		
 		FVector road_min = MinTensor3D(road_bounds); 
 		// road_min = FVector( road_bounds[0][0][0],  road_bounds[0][0][1],  road_bounds[0][0][2] ) ; 
-		std::cerr << " road_min = " << road_min.X << " " << road_min.Y << " " << road_min.Z << std::endl; 
+		
 		TranslateTensor3D(road_bounds, -road_min) ; 
+		TranslateTensor3D(road_bounds_leftmost, -road_min) ; 
 
 		const FVector map_origin = FVector(-10080.0, -10080.0, 0); // meter
 		TranslateTensor3D(road_bounds, map_origin) ; 
-
-		// constexpr 
-		std::cerr << "GetTransform().GetLocation()="<<GetTransform().GetLocation().X << " " << GetTransform().GetLocation().Y << " " << GetTransform().GetLocation().Z << std::endl ; 
+		TranslateTensor3D(road_bounds_leftmost, map_origin) ; 
 
 		FVector increase_height = FVector( 0, 0, 5) ; // 5 meter
 		TranslateTensor3D(road_bounds, increase_height) ; 
+		TranslateTensor3D(road_bounds_leftmost, increase_height) ; 
 
 		ScaleTensor3D(road_bounds, 100) ; // meter to centimeter.
+		ScaleTensor3D(road_bounds_leftmost, 100) ; // meter to centimeter.
 		// SetHeight(road_bounds, 120) ; // set all z-values
 		// SetHeight(road_bounds, 500) ; // set all z-values
 
@@ -93,31 +97,55 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 				// -------------------------------------------------------
 				// Road Single lines
 				// -------------------------------------------------------
-				auto const& road_vector = end_position - start_position ;
-				const float angle = std::atan2(road_vector.X, road_vector.Y) * 180 / M_PI; 
-				const auto len = road_vector.Size() / 100 ; 
-				auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
-				auto const& white_line_translation = FVector(0, 0, -10);
-				auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
-				auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 
-				AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, TEXT("NoCollision") , white_line_transform ) ; 
+				{
+					auto const& road_vector = end_position - start_position ;
+					const float angle = std::atan2(road_vector.X, road_vector.Y) * 180 / M_PI; 
+					const auto len = road_vector.Size() / 100 ; 
+					auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
+					auto const& white_line_translation = FVector(0, 0, -10);
+					auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
+					auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 
+					auto item = AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, TEXT("NoCollision") , white_line_transform ) ; 
+					StoredSplineMeshComp.Add(item);
+				}
+			}
+		}
+
+		
+
+		for (int b = 0; b < NBound_leftmost; ++b)
+		{
+			auto road_points = road_bounds_leftmost[b] ; 
+			int Npoints = road_points.size() ; 
+			for (int i = 1; i < Npoints; ++i)	{
+
+				auto const& start_position = Vector3rToFVector(road_points.at(i-1) ) ; 
+				auto const& end_position = Vector3rToFVector(road_points.at(i) ) ; 
+
+				std::cerr << "leftmost position 1,2 = " << road_points.at(i-1) << " , " << road_points.at(i) << std::endl ; 
 
 				// -------------------------------------------------------
 				// Road Plates
 				// -------------------------------------------------------
-				auto const& road_3D_scale = FVector( 1 , 1 , 1 ) ; 
-				auto const& road_translation = FVector(0, 0, 0); 
-				auto const& road_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
-				auto const& road_transform = FTransform(road_quat, road_translation, road_3D_scale) ; 
-				AddSplineSegment( start_position, end_position, Mesh_Road, MaterialInstance_Road, TEXT("Vehicle"), road_transform ) ; 
+				{
+					auto const& road_3D_scale = FVector( 1 , 1 , 1 ) ; 
+					auto const& road_translation = FVector(0, 0, 0); 
+					auto const& road_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
+					auto const& road_transform = FTransform(road_quat, road_translation, road_3D_scale) ; 
+					auto item = AddSplineSegment( start_position, end_position, Mesh_Road, MaterialInstance_Road, TEXT("Vehicle"), road_transform ) ; 
+					StoredSplineMeshComp.Add(item);
+				}
 			}
 		}
 
-		std::cerr << "ARoadActor::OnConstruction --> NBound=" << NBound  << std::endl ;
 
 		FString CurrentLevel = GetWorld()->GetMapName();
 		std::cerr << " CurrentLevel = ";
 		UE_LOG(LogTemp, Warning, TEXT("%s") , *CurrentLevel) ; 
+		std::cerr << " road_min = " << road_min.X << " " << road_min.Y << " " << road_min.Z << std::endl; 
+		std::cerr << "ARoadActor::OnConstructionEND --> NBound=" << NBound  << std::endl ;
+		std::cerr << "ARoadActor::OnConstructionEND --> NBound_leftmost=" << NBound_leftmost  << std::endl ;
+
 	}
 
 }
@@ -135,7 +163,7 @@ void ARoadActor::Tick(float DeltaTime)
 
 }
 
-void ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& end_position,
+USplineMeshComponent* ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& end_position,
 	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FTransform const& extra_transform )
 {
 	FVector road_vector = end_position - start_position ;
@@ -166,7 +194,7 @@ void ARoadActor::AddSplineSegment(FVector const& start_position, FVector const& 
 	LaneSplineMesh->UpdateMesh();
 	LaneSplineMesh->SetMobility(EComponentMobility::Static);
 	LaneSplineMesh->RegisterComponent();
-	
+	return LaneSplineMesh;
 }
 
 

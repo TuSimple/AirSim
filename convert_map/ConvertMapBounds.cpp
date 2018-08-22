@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     std::vector<Point3d> points = bound_ptr->GetSemanticPts();
     // std::vector<Point3d> points = bounds3D[i];
     if (not InRange2D(points[0], lowXY, highXY ) ) {
-      continue ;
+      // continue ;
     }
     j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(0) ]["X"] = points[0].x ; 
     j["RoadPoints"]["Bounds"][ std::to_string(i) ][ std::to_string(0) ]["Y"] = points[0].y ; 

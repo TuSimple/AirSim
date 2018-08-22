@@ -68,6 +68,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterialInstance* MaterialInstance_Road6;
 
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	TArray<USplineMeshComponent*> StoredSplineMeshComp ; 
 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterial* Material_Road;
@@ -77,7 +79,7 @@ public:
 private:
 	void OnConstruction(const FTransform& Transform) override ; 
 
-	void AddSplineSegment(FVector const& start_position, FVector const& end_position,
+	USplineMeshComponent* AddSplineSegment(FVector const& start_position, FVector const& end_position,
 	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FTransform const& extra_transform ) ; 
 
 	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
