@@ -54,6 +54,21 @@ public:
 	UStaticMesh* Mesh_Road ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterialInstance* MaterialInstance_Road;
+
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* MaterialInstance_Road1;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* MaterialInstance_Road2;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* MaterialInstance_Road3;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* MaterialInstance_Road4;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* MaterialInstance_Road5;
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UMaterialInstance* MaterialInstance_Road6;
+
+
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterial* Material_Road;
 

@@ -27,26 +27,25 @@ ARoadActor::ARoadActor()
 	// static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_Road(TEXT("/Game/ModularRoads01/Materials/MI_Asphalt_02"));
 
 	// static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/AsphaltConcreteRoads/Materials/Mat1_master_tessel"));
-	// '/Game/ModularRoads01/Materials/MI_Asphalt_01'
-	// '/Game/ModularRoads01/Materials/MI_Asphalt_02'
-	// '/Game/ModularRoads01/Materials/MI_Asphalt_03'
-	// '/Game/ModularRoads01/Materials/MI_Asphalt_04'
-	// '/Game/ModularRoads01/Materials/MI_Asphalt_05'
-	// '/Game/ModularRoads01/Materials/MI_Asphalt_06'
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance>  FoundMaterial_Road1(TEXT('/Game/ModularRoads01/Materials/MI_Asphalt_01')) ; 
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance>  FoundMaterial_Road2(TEXT('/Game/ModularRoads01/Materials/MI_Asphalt_02')) ; 
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance>  FoundMaterial_Road3(TEXT('/Game/ModularRoads01/Materials/MI_Asphalt_03')) ; 
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance>  FoundMaterial_Road4(TEXT('/Game/ModularRoads01/Materials/MI_Asphalt_04')) ; 
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance>  FoundMaterial_Road5(TEXT('/Game/ModularRoads01/Materials/MI_Asphalt_05')) ; 
+	// static ConstructorHelpers::FObjectFinder<UMaterialInstance>  FoundMaterial_Road6(TEXT('/Game/ModularRoads01/Materials/MI_Asphalt_06')) ; 
 
-	if (FoundMesh_WhiteLine.Succeeded())	{
-		Mesh_WhiteLine = FoundMesh_WhiteLine.Object ; 
-	}
-	if (FoundMaterial_WhiteLine.Succeeded()){
-	    Material_WhiteLine = FoundMaterial_WhiteLine.Object ;
-	}
+	if (FoundMesh_WhiteLine.Succeeded())	{ Mesh_WhiteLine = FoundMesh_WhiteLine.Object ; 	}
+	if (FoundMaterial_WhiteLine.Succeeded()){ Material_WhiteLine = FoundMaterial_WhiteLine.Object ;	}
 
-	if (FoundMesh_Road.Succeeded())	{
-		Mesh_Road = FoundMesh_Road.Object ; 
-	}
-	if (FoundMaterial_Road.Succeeded()) {
-		MaterialInstance_Road = FoundMaterial_Road.Object ; 
-	}
+	if (FoundMesh_Road.Succeeded())	{ Mesh_Road = FoundMesh_Road.Object ; 	}
+	if (FoundMaterial_Road.Succeeded()) { MaterialInstance_Road = FoundMaterial_Road.Object ; 	}
+	// if (FoundMaterial_Road1.Succeeded()) { MaterialInstance_Road1 = FoundMaterial_Road1.Object ; 	}
+	// if (FoundMaterial_Road2.Succeeded()) { MaterialInstance_Road2 = FoundMaterial_Road2.Object ; 	}
+	// if (FoundMaterial_Road3.Succeeded()) { MaterialInstance_Road3 = FoundMaterial_Road3.Object ; 	}
+	// if (FoundMaterial_Road4.Succeeded()) { MaterialInstance_Road4 = FoundMaterial_Road4.Object ; 	}
+	// if (FoundMaterial_Road5.Succeeded()) { MaterialInstance_Road5 = FoundMaterial_Road5.Object ; 	}
+	// if (FoundMaterial_Road6.Succeeded()) { MaterialInstance_Road6 = FoundMaterial_Road6.Object ; 	}
+	
 	OnConstruction_Called = false ;
 }
 void ARoadActor::OnConstruction(const FTransform& Transform) {
@@ -63,15 +62,23 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 		std::cerr << "ARoadActor::OnConstruction --> NBound=" << NBound  << std::endl ;
 
 		
-		FVector origin = MinTensor3D(road_bounds); 
-		std::cerr << " origin = " << origin.X << " " << origin.Y << " " << origin.Z << std::endl; 
-		TranslateTensor3D(road_bounds, -origin) ; 
+		FVector road_min = MinTensor3D(road_bounds); 
+		// road_min = FVector( road_bounds[0][0][0],  road_bounds[0][0][1],  road_bounds[0][0][2] ) ; 
+		std::cerr << " road_min = " << road_min.X << " " << road_min.Y << " " << road_min.Z << std::endl; 
+		TranslateTensor3D(road_bounds, -road_min) ; 
+
+		const FVector map_origin = FVector(-10080.0, -10080.0, 0); // meter
+		TranslateTensor3D(road_bounds, map_origin) ; 
+
+		// constexpr 
+		std::cerr << "GetTransform().GetLocation()="<<GetTransform().GetLocation().X << " " << GetTransform().GetLocation().Y << " " << GetTransform().GetLocation().Z << std::endl ; 
 
 		FVector increase_height = FVector( 0, 0, 5) ; // 5 meter
 		TranslateTensor3D(road_bounds, increase_height) ; 
 
 		ScaleTensor3D(road_bounds, 100) ; // meter to centimeter.
 		// SetHeight(road_bounds, 120) ; // set all z-values
+		// SetHeight(road_bounds, 500) ; // set all z-values
 
 		for (int b = 0 ; b < NBound ; b++ )	{
 			auto road_points = road_bounds[b] ; 
@@ -90,7 +97,7 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 				const float angle = std::atan2(road_vector.X, road_vector.Y) * 180 / M_PI; 
 				const auto len = road_vector.Size() / 100 ; 
 				auto const& white_line_3D_scale = FVector( 1 , 1 , 1 ) ; 
-				auto const& white_line_translation = FVector(0, 0, -10) + GetTransform().GetLocation() ;
+				auto const& white_line_translation = FVector(0, 0, -10);
 				auto const& white_line_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
 				auto const& white_line_transform = FTransform(white_line_quat, white_line_translation, white_line_3D_scale) ; 
 				AddSplineSegment( start_position, end_position, Mesh_WhiteLine, Material_WhiteLine, TEXT("NoCollision") , white_line_transform ) ; 
@@ -99,12 +106,18 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 				// Road Plates
 				// -------------------------------------------------------
 				auto const& road_3D_scale = FVector( 1 , 1 , 1 ) ; 
-				auto const& road_translation = FVector(0, 0, 0) + GetTransform().GetLocation() ;
+				auto const& road_translation = FVector(0, 0, 0); 
 				auto const& road_quat = FQuat( FRotator(0, 0, 0 ) ) ; 
 				auto const& road_transform = FTransform(road_quat, road_translation, road_3D_scale) ; 
 				AddSplineSegment( start_position, end_position, Mesh_Road, MaterialInstance_Road, TEXT("Vehicle"), road_transform ) ; 
 			}
 		}
+
+		std::cerr << "ARoadActor::OnConstruction --> NBound=" << NBound  << std::endl ;
+
+		FString CurrentLevel = GetWorld()->GetMapName();
+		std::cerr << " CurrentLevel = ";
+		UE_LOG(LogTemp, Warning, TEXT("%s") , *CurrentLevel) ; 
 	}
 
 }

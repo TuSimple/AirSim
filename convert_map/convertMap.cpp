@@ -63,8 +63,8 @@ int main(int argc, char **argv) {
 
   int Nbound = ts_road_bounds.size() ;
 
-  std::vector<double> lowXY = {56000, -65000};
-  std::vector<double> highXY = {59000, -62000};
+  std::vector<double> lowXY = {50000, -70000};
+  std::vector<double> highXY = {60000, -60000};
 
   json j ; 
   // Nbound = 1000 ; 
