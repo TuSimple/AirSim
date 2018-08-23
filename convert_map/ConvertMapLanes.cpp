@@ -48,7 +48,7 @@ void BasicSetting(json& j){
   j["Vehicles"]["SUV"]["Z"] = 0 ; 
   j["Vehicles"]["SUV"]["Pitch"] = 0 ; 
   j["Vehicles"]["SUV"]["Roll"] = 0 ; 
-  j["Vehicles"]["SUV"]["Yaw"] = 0 ; 
+  j["Vehicles"]["SUV"]["Yaw"] = -180 ; 
 
   j["SimMode"] = "Car" ; 
 }
@@ -58,13 +58,21 @@ void RoadBoundsSetting(json& j, std::string name, std::vector<const Bound*> ts_r
   int Nbound = ts_road_bounds.size(); 
   std::ofstream bounds_file ;
   bounds_file.open( name + ".txt");
+
+  // const std::vector<double> lowXY = {50000, -70000};
+  const std::vector<double> lowXY = {60000, -1e30};
+  // const std::vector<double> highXY = {60000, -60000};
+  const std::vector<double> highXY = {1e30, 1e30};
+  std::vector<double> real_lowXY = {1e30, 1e30} ; 
+  std::vector<double> real_highXY = {-1e30, -1e30} ; 
+
   for (int i = 0; i < Nbound ; ++ i )  {
     auto bound_ptr = ts_road_bounds[i] ;
     std::vector<Point3d> points = bound_ptr->GetSemanticPts();
     // std::vector<Point3d> points = bounds3D[i];
-    // if (not InRange2D(points[0], lowXY, highXY ) ) {
-      // continue ;
-    // }
+    if (not InRange2D(points[0], lowXY, highXY ) ) {
+      continue ;
+    }
     j["RoadPoints"][name][ std::to_string(i) ][ std::to_string(0) ]["X"] = points[0].x ; 
     j["RoadPoints"][name][ std::to_string(i) ][ std::to_string(0) ]["Y"] = points[0].y ; 
     j["RoadPoints"][name][ std::to_string(i) ][ std::to_string(0) ]["Z"] = points[0].z ; // airsim use NED coordinate
@@ -77,12 +85,20 @@ void RoadBoundsSetting(json& j, std::string name, std::vector<const Bound*> ts_r
     // bound_file << points[0].x << " " << points[0].y << " " << points[0].z << std::endl; 
     // bound_file << points.back().x << " " << points.back().y << " " << points.back().z << std::endl; 
     // bound_file.close();
+    real_lowXY[0] = std::min(real_lowXY[0], points[0].x) ; 
+    real_lowXY[1] = std::min(real_lowXY[1], points[0].y) ; 
+    real_highXY[0] = std::max(real_highXY[0], points[0].x) ; 
+    real_highXY[1] = std::max(real_highXY[1], points[0].y) ; 
 
     bounds_file << points[0].x << " " << points[0].y << " " << points[0].z << " " ; 
     bounds_file << points.back().x << " " << points.back().y << " " << points.back().z << std::endl; 
     count_out++;
   }
+  const double length_2 = std::pow(real_highXY[0] - real_lowXY[0], 2) + std::pow(real_highXY[1] - real_lowXY[1], 2 ) ; 
   std::cerr << "File [" << name << "] count_out = " << count_out << std::endl ;
+  std::cerr << "File [" << name << "] length    = " << std::sqrt(length_2) << std::endl ;
+  std::cerr << "File [" << name << "] real_lowXY  = " << real_lowXY[0]  << " " << real_lowXY[1] << std::endl ;
+  std::cerr << "File [" << name << "] real_highXY = " << real_highXY[0] << " " << real_highXY[1] << std::endl ;
 
   bounds_file.close();
 }
