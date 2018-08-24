@@ -42,50 +42,70 @@ public:
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UMaterialInstanceDynamic* DynamicMaterialInst;
 
-
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// White Lines 
+	// ------------------------------------------------------------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UStaticMesh* Mesh_Line_White ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterial* Material_Line_White_Solid;
-	// UMaterialInstance* MaterialInstance_WhiteLine;
-
+	TArray<UMaterialInterface*> Material_Line_White_Solid;
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterial* Material_Line_White_Dashed;
+	TArray<UMaterialInterface*> Material_Line_White_Dashed;
 
-	
-	
-
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// Road Planes
+	// ------------------------------------------------------------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UStaticMesh* Mesh_Road ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road;
+	TArray<UMaterialInterface*> Material_Road;
 
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// StreetLamp
+	// ------------------------------------------------------------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road1;
+	UStaticMesh* Mesh_StreetLamp ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road2;
+	TArray<UMaterialInterface*> Material_StreetLamp ; 
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// StreetLamp
+	// ------------------------------------------------------------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road3;
+	UStaticMesh* Mesh_GuardRail ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road4;
+	TArray<UMaterialInterface*> Material_GuardRail ; 
+	
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// RoadDivider
+	// ------------------------------------------------------------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road5;
+	UStaticMesh* Mesh_RoadDivider ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_Road6;
+	TArray<UMaterialInterface*> Material_RoadDivider ; 
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// Tree
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	UStaticMesh* Mesh_Tree ; 
+	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
+	TArray<UMaterialInterface*> Material_Tree ; 
+
+
 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	TArray<USplineMeshComponent*> StoredSplineMeshComp ; 
 
-	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterial* Material_Road;
 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	bool OnConstruction_Called ; 
+
 private:
 	void OnConstruction(const FTransform& Transform) override ; 
 
 	void AddSplineSegment(std::vector<std::vector<msr::airlib::Vector3r>> const& bounds,
-	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FVector const& extra_translation ) ; 
+	UStaticMesh* use_mesh, TArray<UMaterialInterface*> use_material, FName InCollisionProfileName, FVector const& extra_translation ) ; 
 
 	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
 	void TranslateTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, FVector const& movement ) ; 

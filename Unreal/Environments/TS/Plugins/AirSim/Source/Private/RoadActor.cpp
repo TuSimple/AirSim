@@ -12,24 +12,67 @@ ARoadActor::ARoadActor()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// White Lines 
+	// ------------------------------------------------------------------------------------------------------------------------------------
     static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_Line_White(TEXT("/Game/TSAssets/Meshes/line_UV_1"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_Line_White_Dashed(TEXT("/Game/TSAssets/Materials/line_white_dashed_1"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial_Line_White_Solid(TEXT("/Game/ModularRoads01/Materials/Master/M_Master_Material_Alpha_01"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_Line_White_Dashed(TEXT("/Game/TSAssets/Materials/line_white_dashed_1"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_Line_White_Solid(TEXT("/Game/ModularRoads01/Materials/Master/M_Master_Material_Alpha_01"));
+	if (FoundMesh_Line_White.Succeeded())	{ Mesh_Line_White = FoundMesh_Line_White.Object ; 	}
+	if (FoundMaterial_Line_White_Solid.Succeeded()){ Material_Line_White_Solid.Add(FoundMaterial_Line_White_Solid.Object) ; }
+	if (FoundMaterial_Line_White_Dashed.Succeeded()){ Material_Line_White_Dashed.Add(FoundMaterial_Line_White_Dashed.Object) ;	}
 
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// Road Planes
+	// ------------------------------------------------------------------------------------------------------------------------------------
     static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_Road(TEXT("/Game/ModularRoads01/Meshes/Road_Parts/Roads/Style_A/Full_Size/SM_Road_A_01"));
 	// static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_Road(TEXT("/Game/TSAssets/Meshes/Road_Plane/W375L800/RoadOnly_Single_1"));
-
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> FoundMaterial_Road(TEXT("/Game/SnappyRoads/Materials/M_SR_Asphalt004_Tiled_World_Inst"));
-
-
-	if (FoundMesh_Line_White.Succeeded())	{ Mesh_Line_White = FoundMesh_Line_White.Object ; 	}
-	if (FoundMaterial_Line_White_Solid.Succeeded()){ Material_Line_White_Solid = FoundMaterial_Line_White_Solid.Object ;	}
-	if (FoundMaterial_Line_White_Dashed.Succeeded()){ Material_Line_White_Dashed = FoundMaterial_Line_White_Dashed.Object ;	}
-
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_Road(TEXT("/Game/SnappyRoads/Materials/M_SR_Asphalt004_Tiled_World_Inst"));
 	if (FoundMesh_Road.Succeeded())	{ Mesh_Road = FoundMesh_Road.Object ; 	}
-	if (FoundMaterial_Road.Succeeded()) { MaterialInstance_Road = FoundMaterial_Road.Object ; 	}
+	if (FoundMaterial_Road.Succeeded()) { Material_Road.Add(FoundMaterial_Road.Object) ; 	}
 
 
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// StreetLamp
+	// ------------------------------------------------------------------------------------------------------------------------------------
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_StreetLamp(TEXT("/Game/TSAssets/Meshes/StreetLight/StreetLamp_Right_On_1"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_StreetLamp1(TEXT("/Game/SnappyRoads/Materials/M_SR_StreetLamp002"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_StreetLamp2(TEXT("/Game/SnappyRoads/Materials/M_SR_StreetLamp002_Lamp_Off_Inst"));
+	if (FoundMesh_StreetLamp.Succeeded())	{ Mesh_StreetLamp = FoundMesh_StreetLamp.Object ; 	}
+	if (FoundMaterial_StreetLamp1.Succeeded()) { Material_StreetLamp.Add(FoundMaterial_StreetLamp1.Object) ; }
+	if (FoundMaterial_StreetLamp2.Succeeded()) { Material_StreetLamp.Add(FoundMaterial_StreetLamp2.Object) ; }
+
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// GuardRails
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_GuardRail(TEXT("/Game/TSAssets/Meshes/Road_Divider/L800/RoadGuardRail_1"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_GuardRail1(TEXT("/Game/SnappyRoads/Materials/M_SR_Road_GuardRail"));
+	if (FoundMesh_GuardRail.Succeeded())	{ Mesh_GuardRail = FoundMesh_GuardRail.Object ; 	}
+	if (FoundMaterial_GuardRail1.Succeeded()) { Material_GuardRail.Add(FoundMaterial_GuardRail1.Object) ; }
+
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// GuardWall, or road-divider
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_RoadDivider(TEXT("/Game/TSAssets/Meshes/Road_Divider/L800/RoadDivider_1"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_RoadDivider1(TEXT("/Game/SnappyRoads/Materials/M_SR_RoadSection002_Inst"));
+	if (FoundMesh_RoadDivider.Succeeded())	{ Mesh_RoadDivider = FoundMesh_RoadDivider.Object ; 	}
+	if (FoundMaterial_RoadDivider1.Succeeded()) { Material_RoadDivider.Add(FoundMaterial_RoadDivider1.Object) ; }
+
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	// Tree
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh_Tree(TEXT("/Game/TSAssets/Meshes/Tree/SM_Tree01"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_Tree1(TEXT("/Game/ForestSet/Materials/M_TreeBark01"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> FoundMaterial_Tree2(TEXT("/Game/ForestSet/Materials/M_TreeLeaves01"));
+	if (FoundMesh_Tree.Succeeded())	{ Mesh_Tree = FoundMesh_Tree.Object ; 	}
+	if (FoundMaterial_Tree1.Succeeded()) { Material_Tree.Add(FoundMaterial_Tree1.Object) ; }
+	if (FoundMaterial_Tree2.Succeeded()) { Material_Tree.Add(FoundMaterial_Tree2.Object) ; }
+	
+	
 	
 	OnConstruction_Called = false ;
 }
@@ -80,20 +123,55 @@ void ARoadActor::OnConstruction(const FTransform& Transform) {
 		// SetHeight(road_bounds, 500) ; // set all z-values
 
 
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// White Lines 
+		// ------------------------------------------------------------------------------------------------------------------------------------
 		auto const& white_line_translation = FVector(0, 0, -10);
 		AddSplineSegment( road_bounds_mid, Mesh_Line_White, Material_Line_White_Dashed, TEXT("NoCollision") , white_line_translation ) ; 
 		AddSplineSegment( road_bounds_leftmost, Mesh_Line_White, Material_Line_White_Solid, TEXT("NoCollision"), white_line_translation ) ; 
 		AddSplineSegment( road_bounds_rightmost, Mesh_Line_White, Material_Line_White_Solid, TEXT("Vehicle"), white_line_translation ) ; 
 
 
-
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// Road Planes
+		// ------------------------------------------------------------------------------------------------------------------------------------
 		auto const& road_plane_translation = FVector(0, 0, 0) ; 
-		AddSplineSegment( road_bounds_mid, Mesh_Road, MaterialInstance_Road, TEXT("NoCollision") , road_plane_translation ) ; 
-		
-		
+		AddSplineSegment( road_bounds_mid, Mesh_Road, Material_Road, TEXT("NoCollision") , road_plane_translation ) ; 
 		
 
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// StreetLamp
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		auto const& StreetLamp_translation_left = FVector(0, -150, 0) ; 
+		AddSplineSegment( road_bounds_leftmost, Mesh_StreetLamp, Material_StreetLamp, TEXT("NoCollision") , StreetLamp_translation_left ) ; 
+		// auto const& StreetLamp_translation_right = FVector(0, 150, 0) ; 
+		// AddSplineSegment( road_bounds_rightmost, Mesh_GuardRail, Material_GuardRail, TEXT("NoCollision") , StreetLamp_translation_right ) ; 
 
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// GuardRails
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		auto const& GuardRail_translation_left = FVector(0, -200, 0) ; 
+		AddSplineSegment( road_bounds_leftmost, Mesh_GuardRail, Material_GuardRail, TEXT("NoCollision") , GuardRail_translation_left ) ; 
+		auto const& GuardRail_translation_right = FVector(0, 200, 0) ; 
+		AddSplineSegment( road_bounds_rightmost, Mesh_GuardRail, Material_GuardRail, TEXT("NoCollision") , GuardRail_translation_right ) ; 
+		
+
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// GuardWall, or road-divider
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		auto const& RoadDivider_translation_left = FVector(0, -2000, 200) ; 
+		AddSplineSegment( road_bounds_leftmost, Mesh_RoadDivider, Material_RoadDivider, TEXT("NoCollision") , RoadDivider_translation_left ) ; 
+		auto const& RoadDivider_translation_right = FVector(0, 2000, 200) ; 
+		AddSplineSegment( road_bounds_rightmost, Mesh_RoadDivider, Material_RoadDivider, TEXT("NoCollision") , RoadDivider_translation_right ) ; 
+
+
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// Tree
+		// ------------------------------------------------------------------------------------------------------------------------------------
+		// auto const& Tree_translation_left = FVector(0, -3000, 0) ; 
+		// AddSplineSegment( road_bounds_leftmost, Mesh_Tree, Material_Tree, TEXT("NoCollision") , Tree_translation_left ) ; 
+		auto const& Tree_translation_right = FVector(0, 3000, 0) ; 
+		AddSplineSegment( road_bounds_rightmost, Mesh_Tree, Material_Tree, TEXT("NoCollision") , Tree_translation_right ) ; 
 
 
 		FString CurrentLevel = GetWorld()->GetMapName();
@@ -121,7 +199,7 @@ void ARoadActor::Tick(float DeltaTime)
 }
 
 void ARoadActor::AddSplineSegment(std::vector<std::vector<msr::airlib::Vector3r>> const& road_bounds,
-	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FVector const& extra_translation )
+	UStaticMesh* use_mesh, TArray<UMaterialInterface*> use_material, FName InCollisionProfileName, FVector const& extra_translation )
 {
 	const int NBound = road_bounds.size() ; 
 	std::cerr << "NBound=" << NBound << std::endl ; 
@@ -161,8 +239,13 @@ void ARoadActor::AddSplineSegment(std::vector<std::vector<msr::airlib::Vector3r>
 
 				LaneSplineMesh->SetStaticMesh(use_mesh);
 
-				DynamicMaterialInst = UMaterialInstanceDynamic::Create(use_material, LaneSplineMesh);
-				LaneSplineMesh->SetMaterial(0, DynamicMaterialInst);
+				for (int i = 0; i < use_material.Num() ; ++i) {
+					// DynamicMaterialInst = UMaterialInstanceDynamic::Create(use_material[i], LaneSplineMesh);
+					// LaneSplineMesh->SetMaterial(i, DynamicMaterialInst);
+					// DynamicMaterialInst = ;
+					LaneSplineMesh->SetMaterial(i, UMaterialInstanceDynamic::Create(use_material[i], LaneSplineMesh));
+				}
+
 				LaneSplineMesh->SetCollisionProfileName(InCollisionProfileName) ; 
 				LaneSplineMesh->UpdateMesh();
 				LaneSplineMesh->SetMobility(EComponentMobility::Static);
