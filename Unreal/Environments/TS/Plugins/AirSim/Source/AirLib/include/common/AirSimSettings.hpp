@@ -273,7 +273,7 @@ public: //types
     };
 
     struct RoadSetting{
-        std::vector<std::vector<Vector3r>> bounds ;           // vector of segments: each segment has two-points
+        std::vector<std::vector<Vector3r>> bounds_mid ;           // vector of segments: each segment has two-points
         std::vector<std::vector<Vector3r>> bounds_leftmost ;  // vector of segments: each segment has two-points
         std::vector<std::vector<Vector3r>> bounds_rightmost ; // vector of segments: each segment has two-points
     } ;
@@ -747,15 +747,15 @@ private:
             // -----------------------------------
             {
                 msr::airlib::Settings child_bounds ; 
-                child_roads.getChild("Bounds", child_bounds);
-                loadRoadBoundSettings(child_bounds, roads.bounds) ;
+                child_roads.getChild("BoundsMid", child_bounds);
+                loadRoadBoundSettings(child_bounds, roads.bounds_mid) ;
             }
             // -----------------------------------
             // LeftBounds
             // -----------------------------------
             {
                 msr::airlib::Settings child_bounds ; 
-                child_roads.getChild("LeftBounds", child_bounds);
+                child_roads.getChild("BoundsLeft", child_bounds);
                 loadRoadBoundSettings(child_bounds, roads.bounds_leftmost) ;
             }
             // -----------------------------------
@@ -763,7 +763,7 @@ private:
             // -----------------------------------
             {
                 msr::airlib::Settings child_bounds ; 
-                child_roads.getChild("RightBounds", child_bounds);
+                child_roads.getChild("BoundsRight", child_bounds);
                 loadRoadBoundSettings(child_bounds, roads.bounds_rightmost) ;
             }
             

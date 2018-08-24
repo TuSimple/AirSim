@@ -44,11 +44,16 @@ public:
 
 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UStaticMesh* Mesh_WhiteLine ; 
+	UStaticMesh* Mesh_Line_White ; 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterialInstance* MaterialInstance_WhiteLine;
+	UMaterial* Material_Line_White_Solid;
+	// UMaterialInstance* MaterialInstance_WhiteLine;
+
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
-	UMaterial* Material_WhiteLine;
+	UMaterial* Material_Line_White_Dashed;
+
+	
+	
 
 	UPROPERTY(EditAnywhere, Category = "LaneSplineMesh")
 	UStaticMesh* Mesh_Road ; 
@@ -79,8 +84,8 @@ public:
 private:
 	void OnConstruction(const FTransform& Transform) override ; 
 
-	USplineMeshComponent* AddSplineSegment(FVector const& start_position, FVector const& end_position,
-	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FTransform const& extra_transform ) ; 
+	void AddSplineSegment(std::vector<std::vector<msr::airlib::Vector3r>> const& bounds,
+	UStaticMesh* use_mesh, UMaterialInterface* use_material, FName InCollisionProfileName, FVector const& extra_translation ) ; 
 
 	void ScaleTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, float scale ); 
 	void TranslateTensor3D(std::vector<std::vector<msr::airlib::Vector3r>> & tensor3d, FVector const& movement ) ; 

@@ -153,15 +153,24 @@ int main(int argc, char **argv) {
   
 
   // ------------------------------------------------------------------------------------------------------------------------
-  // bounds-all 
+  // bounds-mid 
   // ------------------------------------------------------------------------------------------------------------------------
-  std::vector<std::shared_ptr<const Bound>> ts_road_bounds = tsmap->GetAllBounds() ; 
-  std::vector<const Bound*> ts_road_bounds_all;
-  for (auto ptr: ts_road_bounds)  {
-    ts_road_bounds_all.push_back(ptr.get()) ;
+  // std::vector<std::shared_ptr<const Bound>> ts_road_bounds = tsmap->GetAllBounds() ; 
+  // std::vector<const Bound*> ts_road_bounds_all;
+  // for (auto ptr: ts_road_bounds)  {
+  //   ts_road_bounds_all.push_back(ptr.get()) ;
+  // }
+  std::unordered_set<const Bound*> bounds_mid ;
+
+  for (auto item: ts_road_Lanes)  {
+    if ( lane_leftmost.count(item) > 0 )  { continue ; }
+    if ( lane_rightmost.count(item) > 0 )  { continue ; }
+    bounds_mid.insert(item->GetLeftBound()) ;
+    bounds_mid.insert(item->GetRightBound()) ;
   }
 
-
+  std::vector<const Bound*> ts_road_bounds_mid = std::vector<const Bound*>( bounds_mid.begin(), bounds_mid.end() );
+  std::cerr << " ts_road_bounds_mid.size()=" << ts_road_bounds_mid.size() << std::endl ; 
 
   // ------------------------------------------------------------------------------------------------------------------------
   // Writing Json
@@ -170,9 +179,9 @@ int main(int argc, char **argv) {
   json j ; 
 
   BasicSetting(j);
-  RoadBoundsSetting(j, "LeftBounds", ts_road_bounds_leftmost) ; 
-  RoadBoundsSetting(j, "RightBounds", ts_road_bounds_rightmost) ; 
-  RoadBoundsSetting(j, "Bounds", ts_road_bounds_all) ; 
+  RoadBoundsSetting(j, "BoundsLeft", ts_road_bounds_leftmost) ; 
+  RoadBoundsSetting(j, "BoundsRight", ts_road_bounds_rightmost) ; 
+  RoadBoundsSetting(j, "BoundsMid", ts_road_bounds_mid) ; 
 
   std::ofstream myfile;
   myfile.open("settings.json") ; 
